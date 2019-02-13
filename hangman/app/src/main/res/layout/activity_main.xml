@@ -32,7 +32,6 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:letterSpacing="0.5"
-                android:text="word"
                 android:textColor="@android:color/black"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -72,7 +71,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:ems="10"
@@ -83,7 +81,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/guess_button"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/word_to_guess" />
+                app:layout_constraintTop_toBottomOf="@id/hint_text" />
 
             <Button
                 android:id="@+id/guess_button"
@@ -95,6 +93,19 @@
                 app:layout_constraintBottom_toBottomOf="@+id/letter_field"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/letter_field" />
+
+            <TextView
+                android:id="@+id/hint_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/letter_field"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/word_to_guess" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

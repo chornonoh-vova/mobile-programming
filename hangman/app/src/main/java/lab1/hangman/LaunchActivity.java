@@ -23,7 +23,9 @@ public class LaunchActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.start(getBaseContext(), dict.getRandomWord());
+                String word = dict.getRandomWord();
+                String hint = dict.getHintForWord(word);
+                MainActivity.start(getBaseContext(), word, hint);
             }
         });
 

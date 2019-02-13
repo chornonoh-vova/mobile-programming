@@ -18,6 +18,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static final String WORD_EXTRA = "word_to_guess";
+    public static final String HINT_EXTRA = "hint_to_word";
 
     private String word;
     private int attempts = 6;
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView missedLetters;
     private TextView attemptsView;
     private ImageView hangmanImage;
+    private TextView hintText;
+    private String hint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +44,10 @@ public class MainActivity extends AppCompatActivity {
         missedLetters = findViewById(R.id.missed_letters);
         attemptsView = findViewById(R.id.attempts);
         hangmanImage = findViewById(R.id.hangman_image);
+        hintText = findViewById(R.id.hint_text);
 
         word = getIntent().getStringExtra(WORD_EXTRA);
+        hint = getIntent().getStringExtra(HINT_EXTRA);
 
         wordToGuess.setText(getCodedWord());
         guessButton.setOnClickListener(onGuessClick);
@@ -137,6 +142,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        if (attempts == 2) {
+            hintText.setText(hint);
+        }
+
         String temp = missedLetters.getText().toString();
         temp += letter + ", ";
         missedLettersList.add(letter);
@@ -184,9 +193,10 @@ public class MainActivity extends AppCompatActivity {
         attemptsView.setText(getString(R.string.attempts_left, attempts));
     }
 
-    public static void start(Context context, String word) {
+    public static void start(Context context, String word, String hint) {
         Intent starter = new Intent(context, MainActivity.class);
         starter.putExtra(WORD_EXTRA, word);
+        starter.putExtra(HINT_EXTRA, hint);
         context.startActivity(starter);
     }
 }
