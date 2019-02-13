@@ -25,7 +25,7 @@ public class LaunchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String word = dict.getRandomWord();
                 String hint = dict.getHintForWord(word);
-                MainActivity.start(getBaseContext(), word, hint);
+                startMain(word, hint);
             }
         });
 
@@ -38,5 +38,9 @@ public class LaunchActivity extends AppCompatActivity {
                 System.exit(0);
             }
         });
+    }
+
+    private void startMain(String word, String hint) {
+        MainActivity.start(this, word, hint);
     }
 }

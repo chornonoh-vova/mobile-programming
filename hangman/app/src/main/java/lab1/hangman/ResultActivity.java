@@ -15,6 +15,7 @@ import android.widget.TextView;
 public class ResultActivity extends AppCompatActivity {
     public static final String RESULT_IMAGE_KEY = "result_image";
     public static final String RESULT_TEXT_KEY = "result_text";
+    public static final String RESULT_WORD = "result_word";
 
     private ImageView resultImage;
     private TextView resultText;
@@ -34,14 +35,17 @@ public class ResultActivity extends AppCompatActivity {
         exitButton = findViewById(R.id.result_exit_button);
 
         resultImage.setImageDrawable(getDrawable(getIntent().getIntExtra(RESULT_IMAGE_KEY, R.drawable.hangman_lose)));
-        resultText.setText(getIntent().getIntExtra(RESULT_TEXT_KEY, R.string.loose_text));
 
+        String word = getIntent().getStringExtra(RESULT_WORD);
+        if (word != null) {
+            resultText.setText(getString(getIntent().getIntExtra(RESULT_TEXT_KEY, R.string.loose_text), word));
+        } else {
+            resultText.setText(getIntent().getIntExtra(RESULT_TEXT_KEY, R.string.loose_text));
+        }
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(getBaseContext(), LaunchActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
+                startMenu();
             }
         });
 
@@ -54,10 +58,21 @@ public class ResultActivity extends AppCompatActivity {
         });
     }
 
-    public static void start(Context context, @DrawableRes int resultImage, @StringRes int resultText) {
+    @Override
+    public void onBackPressed() {
+    }
+
+    private void startMenu() {
+        Intent i = new Intent(this, LaunchActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
+    }
+
+    public static void start(Context context, @DrawableRes int resultImage, @StringRes int resultText, String word) {
         Intent starter = new Intent(context, ResultActivity.class);
         starter.putExtra(RESULT_IMAGE_KEY, resultImage);
         starter.putExtra(RESULT_TEXT_KEY, resultText);
+        starter.putExtra(RESULT_WORD, word);
         context.startActivity(starter);
     }
 }

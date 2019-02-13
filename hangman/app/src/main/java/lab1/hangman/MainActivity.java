@@ -1,5 +1,7 @@
 package lab1.hangman;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -7,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -15,6 +18,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     public static final String WORD_EXTRA = "word_to_guess";
@@ -75,11 +79,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (attempts == 0) {
-                ResultActivity.start(getBaseContext(), R.drawable.hangman_lose, R.string.loose_text);
+                startResult(R.drawable.hangman_lose, R.string.loose_text, word);
                 return;
             }
             if (!wordToGuess.getText().toString().contains("_")) {
-                ResultActivity.start(getBaseContext(), R.drawable.hangman_win, R.string.win_text);
+                startResult(R.drawable.hangman_win, R.string.win_text, null);
                 return;
             }
 
@@ -127,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         letterField.setText("");
 
         if (!wordToGuess.getText().toString().contains("_")) {
-            ResultActivity.start(getBaseContext(), R.drawable.hangman_win, R.string.win_text);
+            startResult(R.drawable.hangman_win, R.string.win_text, null);
         }
     }
 
@@ -160,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
         letterField.setText("");
 
         if (attempts == 0) {
-            ResultActivity.start(getBaseContext(), R.drawable.hangman_lose, R.string.loose_text);
+            startResult(R.drawable.hangman_lose, R.string.loose_text, word);
         }
     }
 
@@ -191,6 +195,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateAttempts() {
         attemptsView.setText(getString(R.string.attempts_left, attempts));
+    }
+
+    private void startResult(@DrawableRes int image, @StringRes int text, String word) {
+        hideKeyboard();
+        ResultActivity.start(this, image, text, word);
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(Objects.requireNonNull(this.getCurrentFocus()).getWindowToken(), 0);
     }
 
     public static void start(Context context, String word, String hint) {
