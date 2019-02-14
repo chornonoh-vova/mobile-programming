@@ -10,6 +10,7 @@ import android.widget.Button;
 public class LaunchActivity extends AppCompatActivity {
     private Button startButton;
     private Button exitButton;
+    private Button settingsButton;
 
     private Dictionary dict = new Dictionary();
 
@@ -38,8 +39,20 @@ public class LaunchActivity extends AppCompatActivity {
                 System.exit(0);
             }
         });
+
+        settingsButton = findViewById(R.id.settings_button);
+
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startSettings();
+            }
+        });
     }
 
+    private void startSettings() {
+        SettingsActivity.start(this);
+    }
     private void startMain(String word, String hint) {
         MainActivity.start(this, word, hint);
     }

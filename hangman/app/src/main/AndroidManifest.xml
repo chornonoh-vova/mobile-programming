@@ -9,7 +9,9 @@
         android:roundIcon="@drawable/launcher_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ResultActivity"></activity>
+        <activity android:name=".SettingsActivity"
+            android:parentActivityName=".LaunchActivity"></activity>
+        <activity android:name=".ResultActivity" />
         <activity android:name=".LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,7 +21,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:parentActivityName=".LaunchActivity"></activity>
+            android:parentActivityName=".LaunchActivity" />
     </application>
 
 </manifest>

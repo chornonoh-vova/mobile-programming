@@ -3,19 +3,25 @@ package lab1.hangman;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 public class ResultActivity extends AppCompatActivity {
     public static final String RESULT_IMAGE_KEY = "result_image";
     public static final String RESULT_TEXT_KEY = "result_text";
     public static final String RESULT_WORD = "result_word";
+    private static final String RESULT_WIN_LOSE_KEY = "win_or_lose";
 
     private ImageView resultImage;
     private TextView resultText;
@@ -34,7 +40,27 @@ public class ResultActivity extends AppCompatActivity {
         menuButton = findViewById(R.id.result_menu_button);
         exitButton = findViewById(R.id.result_exit_button);
 
-        resultImage.setImageDrawable(getDrawable(getIntent().getIntExtra(RESULT_IMAGE_KEY, R.drawable.hangman_lose)));
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean win = getIntent().getBooleanExtra(RESULT_WIN_LOSE_KEY, true);
+
+        Drawable resultImageDrawable = null;
+
+        if (Objects.equals(settings.getString("player_type", "boy"), "boy")) {
+      if (win) {
+
+        resultImageDrawable = getDrawable(R.drawable.hangman_win_boy);
+            } else {
+          resultImageDrawable = getDrawable(R.drawable.hangman_lose_boy);
+      }
+        } else {
+            if (win) {
+                resultImageDrawable = getDrawable(R.drawable.hangman_win_girl);
+            } else {
+                resultImageDrawable = getDrawable(R.drawable.hangman_lose_girl);
+            }
+        }
+
+        resultImage.setImageDrawable(resultImageDrawable);
 
         String word = getIntent().getStringExtra(RESULT_WORD);
         if (word != null) {
@@ -68,9 +94,9 @@ public class ResultActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public static void start(Context context, @DrawableRes int resultImage, @StringRes int resultText, String word) {
+    public static void start(Context context, boolean winOrLose, @StringRes int resultText, String word) {
         Intent starter = new Intent(context, ResultActivity.class);
-        starter.putExtra(RESULT_IMAGE_KEY, resultImage);
+        starter.putExtra(RESULT_WIN_LOSE_KEY, winOrLose);
         starter.putExtra(RESULT_TEXT_KEY, resultText);
         starter.putExtra(RESULT_WORD, word);
         context.startActivity(starter);

@@ -3,9 +3,11 @@ package lab1.hangman;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -36,11 +38,15 @@ public class MainActivity extends AppCompatActivity {
     private ImageView hangmanImage;
     private TextView hintText;
     private String hint;
+    private SharedPreferences settings;
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        settings = PreferenceManager.getDefaultSharedPreferences(this);
 
         wordToGuess = findViewById(R.id.word_to_guess);
         letterField = findViewById(R.id.letter_field);
@@ -79,11 +85,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (attempts == 0) {
-                startResult(R.drawable.hangman_lose, R.string.loose_text, word);
+                startResult(false, R.string.loose_text, word);
                 return;
             }
             if (!wordToGuess.getText().toString().contains("_")) {
-                startResult(R.drawable.hangman_win, R.string.win_text, null);
+                startResult(true, R.string.win_text, null);
                 return;
             }
 
@@ -131,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         letterField.setText("");
 
         if (!wordToGuess.getText().toString().contains("_")) {
-            startResult(R.drawable.hangman_win, R.string.win_text, null);
+            startResult(true, R.string.win_text, null);
         }
     }
 
@@ -164,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         letterField.setText("");
 
         if (attempts == 0) {
-            startResult(R.drawable.hangman_lose, R.string.loose_text, word);
+            startResult(false, R.string.loose_text, word);
         }
     }
 
@@ -197,9 +203,9 @@ public class MainActivity extends AppCompatActivity {
         attemptsView.setText(getString(R.string.attempts_left, attempts));
     }
 
-    private void startResult(@DrawableRes int image, @StringRes int text, String word) {
+    private void startResult(boolean win, @StringRes int text, String word) {
         hideKeyboard();
-        ResultActivity.start(this, image, text, word);
+        ResultActivity.start(this, win, text, word);
     }
 
     private void hideKeyboard() {
@@ -212,5 +218,12 @@ public class MainActivity extends AppCompatActivity {
         starter.putExtra(WORD_EXTRA, word);
         starter.putExtra(HINT_EXTRA, hint);
         context.startActivity(starter);
+    }
+
+    public void backgroud(){
+        Objects.equals(settings.getString("background", "White"), "White");
+        Objects.equals(settings.getString("background", "White"), "WaterFall");
+        Objects.equals(settings.getString("background", "White"), "Forest");
+        Objects.equals(settings.getString("background", "White"), "Ocean");
     }
 }

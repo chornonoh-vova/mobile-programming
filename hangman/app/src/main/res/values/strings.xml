@@ -3,4 +3,14 @@
     <string name="attempts_left">You have %1d attempts</string>
     <string name="loose_text">You lose!! The word was: %1s</string>
     <string name="win_text">You saved him, thank you for playing!!</string>
+    <string-array name="player_type">
+        <item>girl</item>
+        <item>boy</item>
+    </string-array>
+    <string-array name="background">
+        <item>White</item>
+        <item>WaterFall</item>
+        <item>Forest</item>
+        <item>Ocean</item>
+    </string-array>
 </resources>
