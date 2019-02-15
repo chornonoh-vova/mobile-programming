@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     public static final String WORD_EXTRA = "word_to_guess";
     public static final String HINT_EXTRA = "hint_to_word";
 
@@ -38,15 +38,11 @@ public class MainActivity extends AppCompatActivity {
     private ImageView hangmanImage;
     private TextView hintText;
     private String hint;
-    private SharedPreferences settings;
-    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        settings = PreferenceManager.getDefaultSharedPreferences(this);
 
         wordToGuess = findViewById(R.id.word_to_guess);
         letterField = findViewById(R.id.letter_field);
@@ -65,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MAIN_ACTIVITY_DEBUG", word);
 
         updateAttempts();
+
+        background();
     }
 
     private String getCodedWord() {
@@ -220,10 +218,5 @@ public class MainActivity extends AppCompatActivity {
         context.startActivity(starter);
     }
 
-    public void backgroud(){
-        Objects.equals(settings.getString("background", "White"), "White");
-        Objects.equals(settings.getString("background", "White"), "WaterFall");
-        Objects.equals(settings.getString("background", "White"), "Forest");
-        Objects.equals(settings.getString("background", "White"), "Ocean");
-    }
+
 }

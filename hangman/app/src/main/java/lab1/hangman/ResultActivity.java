@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import java.util.Objects;
 
-public class ResultActivity extends AppCompatActivity {
+public class ResultActivity extends BaseActivity {
     public static final String RESULT_IMAGE_KEY = "result_image";
     public static final String RESULT_TEXT_KEY = "result_text";
     public static final String RESULT_WORD = "result_word";
@@ -82,6 +82,7 @@ public class ResultActivity extends AppCompatActivity {
                 System.exit(0);
             }
         });
+        background();
     }
 
     @Override

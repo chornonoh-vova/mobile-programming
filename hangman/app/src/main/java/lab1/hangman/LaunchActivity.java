@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class LaunchActivity extends AppCompatActivity {
+public class LaunchActivity extends BaseActivity {
     private Button startButton;
     private Button exitButton;
     private Button settingsButton;
@@ -48,6 +48,7 @@ public class LaunchActivity extends AppCompatActivity {
                 startSettings();
             }
         });
+        background();
     }
 
     private void startSettings() {
