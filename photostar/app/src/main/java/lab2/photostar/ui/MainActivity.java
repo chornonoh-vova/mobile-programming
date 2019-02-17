@@ -1,6 +1,7 @@
-package lab2.photostar;
+package lab2.photostar.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import lab2.photostar.R;
 
 import android.os.Bundle;
 
