@@ -3,7 +3,7 @@
     package="lab2.photostar">
 
     <application
-        android:name=".PhotoStarApplication"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
