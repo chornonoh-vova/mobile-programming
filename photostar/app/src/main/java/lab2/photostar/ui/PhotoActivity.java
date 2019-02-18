@@ -20,6 +20,7 @@ import java.util.Objects;
 
 public class PhotoActivity extends AppCompatActivity {
     public static final String PHOTO_URL_EXTRA = "photo_url";
+    public static final String PHOTO_STARS_EXTRA = "photo_stars";
     public static final int STAR_PHOTO = 1;
 
     private PhotoDao photoDao = App.get().getDb().photoDao();
@@ -94,6 +95,10 @@ public class PhotoActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     setStars(finalI + 1);
+                                    Intent data = new Intent();
+                                    data.putExtra(PHOTO_URL_EXTRA, photoUrl);
+                                    data.putExtra(PHOTO_STARS_EXTRA, finalI + 1);
+                                    setResult(RESULT_OK, data);
                                 }
                             });
                         }
