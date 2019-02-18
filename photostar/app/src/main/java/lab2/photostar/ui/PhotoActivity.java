@@ -2,6 +2,7 @@ package lab2.photostar.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import lab2.photostar.App;
 import lab2.photostar.R;
 import lab2.photostar.dao.PhotoDao;
@@ -12,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -26,8 +28,11 @@ public class PhotoActivity extends AppCompatActivity {
     private PhotoDao photoDao = App.get().getDb().photoDao();
 
     private Toolbar photoToolbar;
+    private ConstraintLayout starsLayout;
     private ImageView photoView;
     private ImageView[] stars;
+
+    private boolean fullscreen = false;
 
     String photoUrl;
 
@@ -38,6 +43,7 @@ public class PhotoActivity extends AppCompatActivity {
 
         photoToolbar = findViewById(R.id.photo_toolbar);
         photoView = findViewById(R.id.photo_view);
+        starsLayout = findViewById(R.id.photo_star_layout);
 
         stars = new ImageView[5];
 
@@ -57,55 +63,27 @@ public class PhotoActivity extends AppCompatActivity {
 
         Picasso.get().load("file:" + photoUrl).into(photoView);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final int starsCount = photoDao.getStarsForPhoto(photoUrl);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        setStars(starsCount);
-                    }
-                });
-            }
-        }).start();
+        setStarsFromDb();
 
         for (int i = 0; i < stars.length; i++) {
             final int finalI = i;
             stars[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Photo p = new Photo();
-                            p.setPhotoUrl(photoUrl);
-                            p.setStarCount(finalI + 1);
-
-                            Photo pDb = photoDao.getPhoto(photoUrl);
-
-                            if (pDb != null) {
-                                p.setId(pDb.getId());
-                                photoDao.update(p);
-                            } else {
-                                photoDao.insert(p);
-                            }
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    setStars(finalI + 1);
-                                    Intent data = new Intent();
-                                    data.putExtra(PHOTO_URL_EXTRA, photoUrl);
-                                    data.putExtra(PHOTO_STARS_EXTRA, finalI + 1);
-                                    setResult(RESULT_OK, data);
-                                }
-                            });
-                        }
-                    }).start();
+                    updateStarCount(finalI + 1);
                 }
             });
         }
+
+        photoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fullscreen = !fullscreen;
+                updateWindow();
+            }
+        });
+
+        updateWindow();
     }
 
     private void setStars(int starsCount) {
@@ -124,5 +102,72 @@ public class PhotoActivity extends AppCompatActivity {
         Intent intent = new Intent(activity, PhotoActivity.class);
         intent.putExtra(PHOTO_URL_EXTRA, photoUrl);
         activity.startActivityForResult(intent, STAR_PHOTO);
+    }
+
+    private void setStarsFromDb() {
+        startTask(new Runnable() {
+            @Override
+            public void run() {
+                final int starsCount = photoDao.getStarsForPhoto(photoUrl);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setStars(starsCount);
+                    }
+                });
+            }
+        });
+    }
+
+    private void updateStarCount(final int starCount) {
+        startTask(new Runnable() {
+            @Override
+            public void run() {
+                Photo p = new Photo();
+                p.setPhotoUrl(photoUrl);
+                p.setStarCount(starCount);
+
+                Photo pDb = photoDao.getPhoto(photoUrl);
+
+                if (pDb != null) {
+                    p.setId(pDb.getId());
+                    photoDao.update(p);
+                } else {
+                    photoDao.insert(p);
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setStars(starCount);
+                        Intent data = new Intent();
+                        data.putExtra(PHOTO_URL_EXTRA, photoUrl);
+                        data.putExtra(PHOTO_STARS_EXTRA, starCount);
+                        setResult(RESULT_OK, data);
+                    }
+                });
+            }
+        });
+    }
+
+    private void startTask(Runnable task) {
+        new Thread(task).start();
+    }
+
+    private void updateWindow() {
+        WindowManager.LayoutParams attrs = getWindow().getAttributes();
+        if (fullscreen) {
+            attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        } else {
+            attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        }
+        getWindow().setAttributes(attrs);
+        if (fullscreen) {
+            getSupportActionBar().hide();
+            starsLayout.setVisibility(View.GONE);
+        } else {
+            getSupportActionBar().show();
+            starsLayout.setVisibility(View.VISIBLE);
+        }
     }
 }

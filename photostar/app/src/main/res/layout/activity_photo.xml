@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_dark"
+    android:fitsSystemWindows="true"
+    android:animateLayoutChanges="true"
     tools:context=".ui.PhotoActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -12,8 +14,6 @@
         style="@style/ToolbarTheme"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#aaaaaaaa"
-        app:titleTextColor="@android:color/background_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,20 +26,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_image_placeholder"/>
+        app:srcCompat="@drawable/ic_image_placeholder" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/photo_star_layout"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="#aaaaaaaa"
+        android:layout_height="wrap_content"
+        android:background="@android:color/darker_gray"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:id="@+id/photo_star5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/photo_star4"
@@ -48,8 +50,8 @@
 
         <ImageView
             android:id="@+id/photo_star4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/photo_star5"
             app:layout_constraintStart_toEndOf="@+id/photo_star3"
@@ -58,8 +60,8 @@
 
         <ImageView
             android:id="@+id/photo_star3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/photo_star4"
             app:layout_constraintStart_toEndOf="@+id/photo_star2"
@@ -68,8 +70,8 @@
 
         <ImageView
             android:id="@+id/photo_star2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/photo_star3"
             app:layout_constraintStart_toEndOf="@+id/photo_star1"
@@ -78,8 +80,8 @@
 
         <ImageView
             android:id="@+id/photo_star1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/photo_star2"
             app:layout_constraintStart_toStartOf="parent"

@@ -108,8 +108,10 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PhotoActivity.STAR_PHOTO) {
             if (resultCode == RESULT_OK) {
                 for (int i = 0; i < adapter.getDataset().size(); i++) {
-                    if (adapter.getDataset().get(i).getPhotoUrl().equals(data.getStringExtra(PhotoActivity.PHOTO_URL_EXTRA))) {
-                        adapter.getDataset().get(i).setStarCount(data.getIntExtra(PhotoActivity.PHOTO_STARS_EXTRA, 0));
+                    String photoUrl = data.getStringExtra(PhotoActivity.PHOTO_URL_EXTRA);
+                    if (adapter.getDataset().get(i).getPhotoUrl().equals(photoUrl)) {
+                        int starCount = data.getIntExtra(PhotoActivity.PHOTO_STARS_EXTRA, 0);
+                        adapter.getDataset().get(i).setStarCount(starCount);
                         runLayoutAnimation(photosList);
                     }
                 }
