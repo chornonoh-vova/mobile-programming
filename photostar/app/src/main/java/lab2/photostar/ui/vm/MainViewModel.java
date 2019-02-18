@@ -38,14 +38,18 @@ public class MainViewModel extends AndroidViewModel {
                     List<Photo> photosObj = new ArrayList<>();
 
                     for (String photoUri : photosUri) {
-                        Photo photo = new Photo();
-                        photo.setPhotoUrl(photoUri);
-                        photo.setStarCount(0);
+                        if (photoUri.contains("Wallpapers")) {
+                            Photo photo = new Photo();
+                            photo.setPhotoUrl(photoUri);
+                            int starCount = photoDao.getStarsForPhoto(photoUri);
 
-                        photosObj.add(photo);
+                            photo.setStarCount(starCount);
+
+                            photosObj.add(photo);
+                        }
                     }
 
-                    photos.postValue(photosObj.subList(0, 50));
+                    photos.postValue(photosObj);
                 }
             };
 

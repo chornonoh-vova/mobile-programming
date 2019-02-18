@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
-        adapter = new PhotosListAdapter(new ArrayList<Photo>());
+        adapter = new PhotosListAdapter(new ArrayList<Photo>(), photoListener);
 
         initPhotosList();
 
@@ -134,5 +135,18 @@ public class MainActivity extends AppCompatActivity {
         }
         photosList.setItemAnimator(new DefaultItemAnimator());
         photosList.setAdapter(adapter);
+    }
+
+    private View.OnClickListener photoListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int itemPosition = photosList.getChildLayoutPosition(v);
+            Photo item = ((PhotosListAdapter) photosList.getAdapter()).getDataset().get(itemPosition);
+            startPhoto(item.getPhotoUrl());
+        }
+    };
+
+    private void startPhoto(String photoUrl) {
+        PhotoActivity.start(this, photoUrl);
     }
 }

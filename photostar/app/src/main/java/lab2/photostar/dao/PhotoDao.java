@@ -12,6 +12,9 @@ import lab2.photostar.model.Photo;
 
 @Dao
 public interface PhotoDao {
+    @Query("select * from photo where photo_url = :photoUrl")
+    Photo getPhoto(String photoUrl);
+
     @Query("select * from photo")
     List<Photo> getAll();
 

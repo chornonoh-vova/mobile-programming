@@ -1,7 +1,5 @@
 package lab2.photostar.ui.adapters;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -10,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -20,16 +18,20 @@ import lab2.photostar.R;
 import lab2.photostar.model.Photo;
 
 public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.ViewHolder> {
+    private final View.OnClickListener listener;
     private List<Photo> dataset;
 
-    public PhotosListAdapter(List<Photo> dataset) {
+    public PhotosListAdapter(List<Photo> dataset, View.OnClickListener listener) {
         this.dataset = dataset;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.photos_list_item, parent, false));
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.photos_list_item, parent, false);
+        v.setOnClickListener(listener);
+        return new ViewHolder(v);
     }
 
     @Override
@@ -40,9 +42,10 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
 
         holder.photoName.setText(photoUri.getLastPathSegment());
 
-        Glide.with(holder.itemView)
-                .load(photo.getPhotoUrl())
+        Picasso.get()
+                .load("file:" + photo.getPhotoUrl())
                 .placeholder(R.drawable.ic_image_placeholder)
+                .resize(400, 400)
                 .centerCrop()
                 .into(holder.photo);
 
@@ -52,6 +55,10 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
     @Override
     public int getItemCount() {
         return dataset.size();
+    }
+
+    public List<Photo> getDataset() {
+        return dataset;
     }
 
     public void setDataset(List<Photo> dataset) {
