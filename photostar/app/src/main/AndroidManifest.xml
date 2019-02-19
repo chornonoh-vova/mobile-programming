@@ -15,8 +15,11 @@
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.PhotoActivity"
-            android:parentActivityName=".ui.MainActivity"></activity>
+        <activity android:name=".ui.EditActivity"></activity>
+        <activity android:name=".ui.FoldersActivity" />
+        <activity
+            android:name=".ui.PhotoActivity"
+            android:parentActivityName=".ui.MainActivity" />
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

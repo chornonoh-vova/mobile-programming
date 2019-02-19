@@ -14,7 +14,16 @@ public class GalleryPhotos {
     public GalleryPhotos(Context context) {
         this.context = context;
     }
+    public List<String> getAllFolders() {
+        List<String> photos = getAllPhotos();
+        List<String> folders = new ArrayList<>();
 
+        // loop to convert photos list to folders list
+        for (String item: photos) {
+            // TODO: 19/02/19 Add photo folders getting
+        }
+        return folders;
+    }
     public List<String> getAllPhotos() {
         List<String> photos = new ArrayList<>();
 
