@@ -63,7 +63,8 @@ public class PhotoActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_arrow_back);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        Picasso.get().load("file:" + photoUrl).into(photoView);
+        photoView.setImageURI(Uri.parse(photoUrl));
+//        Picasso.get().load("file:" + photoUrl).into(photoView);
 
         setStarsFromDb();
 

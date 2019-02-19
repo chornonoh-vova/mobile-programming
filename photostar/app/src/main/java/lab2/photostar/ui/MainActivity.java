@@ -137,9 +137,9 @@ public class MainActivity extends AppCompatActivity {
         int spanCount;
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            spanCount = 2;
-        } else {
             spanCount = 3;
+        } else {
+            spanCount = 4;
         }
 
         return new GridLayoutManager(this, spanCount);

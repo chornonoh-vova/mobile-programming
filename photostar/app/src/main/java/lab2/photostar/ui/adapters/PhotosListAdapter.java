@@ -1,7 +1,14 @@
 package lab2.photostar.ui.adapters;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +22,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import lab2.photostar.R;
+import lab2.photostar.model.GalleryPhotos;
 import lab2.photostar.model.Photo;
 
 public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.ViewHolder> {
@@ -38,16 +46,22 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Photo photo = dataset.get(position);
 
-        Uri photoUri = Uri.parse(photo.getPhotoUrl());
+        Uri photoUri = Uri.parse("file://" + photo.getPhotoUrl());
 
         holder.photoName.setText(photoUri.getLastPathSegment());
 
-        Picasso.get()
-                .load("file:" + photo.getPhotoUrl())
-                .placeholder(R.drawable.ic_image_placeholder)
-                .resize(400, 400)
-                .centerCrop()
-                .into(holder.photo);
+        ContentResolver cr = holder.itemView.getContext().getContentResolver();
+
+        holder.photo.setImageBitmap(MediaStore.Images.Thumbnails.getThumbnail(cr,
+                holder.gallery.getThumbId(photo.getPhotoUrl()),
+                MediaStore.Images.Thumbnails.MINI_KIND, null));
+
+//        Picasso.get()
+//                .load("file:" + photo.getPhotoUrl())
+//                .placeholder(R.drawable.ic_image_placeholder)
+//                .resize(200, 200)
+//                .centerCrop()
+//                .into(holder.photo);
 
         holder.setStars(photo.getStarCount());
     }
@@ -66,6 +80,7 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        GalleryPhotos gallery;
         private TextView photoName;
         private ImageView photo;
         private ImageView[] stars;
@@ -83,6 +98,8 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
             stars[2] = itemView.findViewById(R.id.photo_star3);
             stars[3] = itemView.findViewById(R.id.photo_star4);
             stars[4] = itemView.findViewById(R.id.photo_star5);
+
+            gallery = new GalleryPhotos(itemView.getContext());
         }
 
         public void setStars(int starsCount) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +32,7 @@ public class GalleryPhotos {
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
         // define columns
-        String[] projection = {
-                MediaStore.MediaColumns.DATA,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME
-        };
+        String[] projection = { MediaStore.MediaColumns.DATA };
 
         // cursor to get all images (like from database)
         // using try-with-resources to auto-close
@@ -49,5 +47,31 @@ public class GalleryPhotos {
         }
 
         return photos;
+    }
+
+    public int getThumbId(String photoUrl) {
+        int returnId = 0;
+        // get all external content images
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+        // define columns
+        String[] projection = {
+                MediaStore.MediaColumns.DATA,
+                MediaStore.Images.Media._ID
+        };
+
+        String selection = MediaStore.MediaColumns.DATA + " = ?";
+
+        String[] selectionArgs = { photoUrl };
+
+        try (Cursor cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
+                MediaStore.Images.Media.DEFAULT_SORT_ORDER)) {
+            int columnIndexData = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+            while (cursor.moveToNext()) {
+                returnId = cursor.getInt(columnIndexData);
+            }
+        }
+
+        return returnId;
     }
 }
