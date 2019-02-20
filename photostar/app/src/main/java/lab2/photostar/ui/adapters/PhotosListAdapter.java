@@ -1,14 +1,12 @@
 package lab2.photostar.ui.adapters;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.media.MediaScannerConnection;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import lab2.photostar.R;
 import lab2.photostar.model.GalleryPhotos;
 import lab2.photostar.model.Photo;
+import lab2.photostar.utils.BitmapUtils;
 
 public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.ViewHolder> {
     private final View.OnClickListener listener;
@@ -43,18 +42,32 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Photo photo = dataset.get(position);
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+        final Photo photo = dataset.get(position);
 
         Uri photoUri = Uri.parse("file://" + photo.getPhotoUrl());
 
         holder.photoName.setText(photoUri.getLastPathSegment());
 
-        ContentResolver cr = holder.itemView.getContext().getContentResolver();
+        runTask(new Runnable() {
+            @Override
+            public void run() {
+                ContentResolver cr = holder.itemView.getContext().getContentResolver();
 
-        holder.photo.setImageBitmap(MediaStore.Images.Thumbnails.getThumbnail(cr,
-                holder.gallery.getThumbId(photo.getPhotoUrl()),
-                MediaStore.Images.Thumbnails.MINI_KIND, null));
+                final Bitmap photoBitmap = BitmapUtils.centerCrop(
+                        MediaStore.Images.Thumbnails.getThumbnail(cr,
+                        holder.gallery.getThumbId(photo.getPhotoUrl()),
+                        MediaStore.Images.Thumbnails.MINI_KIND, null));
+
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        holder.photo.setImageBitmap(photoBitmap);
+                    }
+                });
+            }
+        });
 
 //        Picasso.get()
 //                .load("file:" + photo.getPhotoUrl())
@@ -113,5 +126,13 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
                 }
             }
         }
+    }
+
+    private void runTask(Runnable r) {
+        new Thread(r).start();
+    }
+
+    private void runOnUiThread(Runnable r) {
+        new Handler(Looper.getMainLooper()).post(r);
     }
 }
