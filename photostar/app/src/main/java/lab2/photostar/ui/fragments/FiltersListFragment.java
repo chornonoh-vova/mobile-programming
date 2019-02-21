@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import lab2.photostar.R;
+import lab2.photostar.ui.EditActivity;
 import lab2.photostar.ui.adapters.ThumbnailsAdapter;
 import lab2.photostar.utils.BitmapUtils;
 
@@ -31,12 +32,7 @@ public class FiltersListFragment extends Fragment implements ThumbnailsAdapter.T
 
     private RecyclerView recyclerView;
     private List<ThumbnailItem> thumbnailItemList;
-    private FiltersListFragmentListener listener;
     private ThumbnailsAdapter adapter;
-
-    public void setListener(FiltersListFragmentListener listener) {
-        this.listener = listener;
-    }
 
     @Nullable
     @Override
@@ -52,7 +48,7 @@ public class FiltersListFragment extends Fragment implements ThumbnailsAdapter.T
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
 
-        prepareThumbnail(getArguments().getString(FILE_KEY));
+        prepareThumbnail(getActivity().getIntent().getStringExtra(EditActivity.PHOTO_URL_EXTRA));
 
         return view;
     }
@@ -61,7 +57,7 @@ public class FiltersListFragment extends Fragment implements ThumbnailsAdapter.T
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                Bitmap thumbImage = BitmapUtils.getBitmapFromGallery(file, 100, 100);
+                Bitmap thumbImage = BitmapUtils.centerCrop(BitmapUtils.getBitmapFromGallery(file, 300, 300));
                 ThumbnailsManager.clearThumbs();
                 thumbnailItemList.clear();
 
@@ -99,9 +95,7 @@ public class FiltersListFragment extends Fragment implements ThumbnailsAdapter.T
 
     @Override
     public void onFilterSelected(Filter filter) {
-        if (listener != null) {
-            listener.onFilterSelected(filter);
-        }
+        ((FiltersListFragmentListener) getActivity()).onFilterSelected(filter);
     }
 
     public interface FiltersListFragmentListener {

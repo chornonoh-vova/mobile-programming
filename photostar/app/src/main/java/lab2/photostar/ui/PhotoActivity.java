@@ -1,5 +1,6 @@
 package lab2.photostar.ui;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -99,10 +101,21 @@ public class PhotoActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.edit_action:
-
+                EditActivity.start(this, photoUrl);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == EditActivity.EDIT_PHOTO) {
+            if (resultCode == RESULT_OK) {
+                showToast("Image successfully edited");
+            } else {
+                showToast("Image editing discarded or failed");
+            }
         }
     }
 
@@ -189,5 +202,9 @@ public class PhotoActivity extends AppCompatActivity {
             getSupportActionBar().show();
             starsLayout.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }
