@@ -19,6 +19,11 @@ public class MainViewModel extends AndroidViewModel {
     private GalleryPhotos galleryPhotos;
     private String folder;
 
+    private static final int loadStep = 20;
+    private int lastItem;
+    private int totalItemCount;
+
+    private List<Photo> photosList = new ArrayList<>();
     private MutableLiveData<List<Photo>> photos = null;
 
     public MainViewModel(@NonNull Application application) {
@@ -30,35 +35,55 @@ public class MainViewModel extends AndroidViewModel {
     public LiveData<List<Photo>> getPhotos() {
         if (photos == null) {
             photos = new MutableLiveData<>();
-
-            Runnable loadPhotos = new Runnable() {
-                @Override
-                public void run() {
-                    List<String> photosUri = galleryPhotos.getAllPhotos();
-
-                    List<Photo> photosObj = new ArrayList<>();
-
-                    for (String photoUri : photosUri) {
-                        if (photoUri.contains(folder)) {
-                            Photo photo = new Photo();
-                            photo.setPhotoUrl(photoUri);
-                            int starCount = photoDao.getStarsForPhoto(photoUri);
-
-                            photo.setStarCount(starCount);
-
-                            photosObj.add(photo);
-                        }
-                    }
-
-                    photos.postValue(photosObj);
-                }
-            };
-
-            new Thread(loadPhotos).start();
+            new Thread(loadPhotosList).start();
 
         }
         return photos;
     }
+
+    public LiveData<List<Photo>> getNextPhotos() {
+        MutableLiveData<List<Photo>> nextPhotos = new MutableLiveData<>();
+        int oldLastItem = lastItem;
+        if (lastItem == totalItemCount) {
+            return nextPhotos;
+        } else if (totalItemCount < lastItem + loadStep) {
+            lastItem = totalItemCount;
+            nextPhotos.postValue(photosList.subList(oldLastItem, lastItem));
+        } else {
+            lastItem += loadStep;
+            nextPhotos.postValue(photosList.subList(oldLastItem, lastItem));
+        }
+        return nextPhotos;
+    }
+
+    private Runnable loadPhotosList = new Runnable() {
+        @Override
+        public void run() {
+            List<String> photosUri = galleryPhotos.getAllPhotos();
+
+            for (String photoUri : photosUri) {
+                if (photoUri.contains(folder)) {
+                    Photo photo = new Photo();
+                    photo.setPhotoUrl(photoUri);
+                    int starCount = photoDao.getStarsForPhoto(photoUri);
+
+                    photo.setStarCount(starCount);
+
+                    photosList.add(photo);
+                }
+            }
+
+            totalItemCount = photosList.size();
+
+            if (totalItemCount < loadStep) {
+                lastItem = totalItemCount;
+            } else {
+                lastItem = loadStep;
+            }
+
+            photos.postValue(photosList.subList(0, lastItem));
+        }
+    };
 
     public void setFolder(String folder) {
         this.folder = folder;

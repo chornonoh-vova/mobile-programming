@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,9 +18,11 @@ import android.view.animation.LayoutAnimationController;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -36,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView photosList;
     private PhotosListAdapter adapter;
     private String folder;
+
+    private boolean isLoading = true;
 
     private MainViewModel mainViewModel;
 
@@ -66,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         mainViewModel.getPhotos().observe(this, new Observer<List<Photo>>() {
             @Override
             public void onChanged(List<Photo> photos) {
+                isLoading = false;
                 adapter.setDataset(photos);
                 runLayoutAnimation(photosList);
             }
@@ -78,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
 
         recyclerView.setLayoutAnimation(controller);
-        recyclerView.getAdapter().notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
         recyclerView.scheduleLayoutAnimation();
     }
 
@@ -160,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
         }
         photosList.setItemAnimator(new DefaultItemAnimator());
         photosList.setAdapter(adapter);
+        photosList.addOnScrollListener(recyclerViewOnScrollListener);
+        photosList.setNestedScrollingEnabled(true);
     }
 
     private View.OnClickListener photoListener = new View.OnClickListener() {
@@ -170,6 +179,55 @@ public class MainActivity extends AppCompatActivity {
             startPhoto(item.getPhotoUrl());
         }
     };
+
+    private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+
+            RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
+
+            int visibleItemCount = manager.getChildCount();
+            int totalItemCount = manager.getItemCount();
+            int firstVisibleItemPosition = (manager instanceof LinearLayoutManager) ?
+                    ((LinearLayoutManager) manager).findFirstVisibleItemPosition() :
+                    ((GridLayoutManager) manager).findFirstVisibleItemPosition();
+
+            if (!isLoading) {
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                        && firstVisibleItemPosition >= 0
+                        && totalItemCount >= 20) {
+                    loadNext();
+                }
+            }
+        }
+    };
+
+    private boolean isViewVisible(View view) {
+        Rect scrollBounds = new Rect();
+        getWindow().getDecorView().getDrawingRect(scrollBounds);
+        float top = view.getY();
+        float bottom = top + view.getHeight();
+        return scrollBounds.top < top && scrollBounds.bottom > bottom;
+    }
+
+    private void loadNext() {
+        mainViewModel.getNextPhotos().observe(MainActivity.this, new Observer<List<Photo>>() {
+            @Override
+            public void onChanged(List<Photo> photos) {
+                isLoading = false;
+                List<Photo> dataset = new ArrayList<>(adapter.getDataset());
+                dataset.addAll(photos);
+                adapter.setDataset(dataset);
+                runLayoutAnimation(photosList);
+            }
+        });
+    }
 
     private void startPhoto(String photoUrl) {
         PhotoActivity.start(this, photoUrl);

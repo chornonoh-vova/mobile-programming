@@ -10,6 +10,7 @@ import lab2.photostar.dao.PhotoDao;
 import lab2.photostar.model.Photo;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -121,7 +122,9 @@ public class PhotoActivity extends AppCompatActivity {
 
     private void setStars(int starsCount) {
         Drawable filled = getDrawable(R.drawable.ic_star);
+//        filled.setTint(Color.WHITE);
         Drawable empty = getDrawable(R.drawable.ic_star_border);
+//        empty.setTint(Color.WHITE);
         for (int i = 0; i < 5; i++) {
             if (i < starsCount) {
                 stars[i].setImageDrawable(filled);
