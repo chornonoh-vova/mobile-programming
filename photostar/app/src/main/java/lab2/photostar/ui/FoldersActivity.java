@@ -45,7 +45,7 @@ public class FoldersActivity extends AppCompatActivity {
         public void onClick(View v) {
             int itemPosition = foldersList.getChildLayoutPosition(v);
             String folder = adapter.getData().get(itemPosition);
-            MainActivity.start(FoldersActivity.this, folder);
+            PhotosActivity.start(FoldersActivity.this, folder);
         }
     };
 }

@@ -7,8 +7,6 @@ import lab2.photostar.model.GalleryPhotos;
 import lab2.photostar.ui.fragments.FiltersListFragment;
 import lab2.photostar.utils.BitmapUtils;
 
-import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -60,7 +58,7 @@ public class EditActivity extends AppCompatActivity implements FiltersListFragme
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.edit_photo_menu, menu);
+        getMenuInflater().inflate(R.menu.edit_activity_menu, menu);
         return true;
     }
 

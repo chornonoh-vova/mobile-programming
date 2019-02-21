@@ -14,7 +14,7 @@ import lab2.photostar.dao.PhotoDao;
 import lab2.photostar.model.GalleryPhotos;
 import lab2.photostar.model.Photo;
 
-public class MainViewModel extends AndroidViewModel {
+public class PhotosViewModel extends AndroidViewModel {
     private PhotoDao photoDao = App.get().getDb().photoDao();
     private GalleryPhotos galleryPhotos;
     private String folder;
@@ -26,7 +26,7 @@ public class MainViewModel extends AndroidViewModel {
     private List<Photo> photosList = new ArrayList<>();
     private MutableLiveData<List<Photo>> photos = null;
 
-    public MainViewModel(@NonNull Application application) {
+    public PhotosViewModel(@NonNull Application application) {
         super(application);
 
         galleryPhotos = new GalleryPhotos(application);

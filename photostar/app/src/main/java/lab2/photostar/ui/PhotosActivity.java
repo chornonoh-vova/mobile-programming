@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -32,9 +29,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import lab2.photostar.R;
 import lab2.photostar.model.Photo;
 import lab2.photostar.ui.adapters.PhotosListAdapter;
-import lab2.photostar.ui.vm.MainViewModel;
+import lab2.photostar.ui.vm.PhotosViewModel;
 
-public class MainActivity extends AppCompatActivity {
+public class PhotosActivity extends AppCompatActivity {
     public static final String FOLDER_URL_EXTRA = "folder_url_extra";
     private Toolbar mainToolbar;
     private RecyclerView photosList;
@@ -43,14 +40,14 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isLoading = true;
 
-    private MainViewModel mainViewModel;
+    private PhotosViewModel photosViewModel;
 
     private SharedPreferences settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_photos);
 
         mainToolbar = findViewById(R.id.main_toolbar);
         photosList = findViewById(R.id.photos_list);
@@ -62,14 +59,14 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back);
         settings = PreferenceManager.getDefaultSharedPreferences(this);
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        mainViewModel.setFolder(folder);
+        photosViewModel = ViewModelProviders.of(this).get(PhotosViewModel.class);
+        photosViewModel.setFolder(folder);
 
         adapter = new PhotosListAdapter(new ArrayList<Photo>(), photoListener);
 
         initPhotosList();
 
-        mainViewModel.getPhotos().observe(this, new Observer<List<Photo>>() {
+        photosViewModel.getPhotos().observe(this, new Observer<List<Photo>>() {
             @Override
             public void onChanged(List<Photo> photos) {
                 isLoading = false;
@@ -92,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.photos_activity_menu, menu);
 
         MenuItem layoutItem = menu.getItem(0);
 
@@ -208,16 +205,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private boolean isViewVisible(View view) {
-        Rect scrollBounds = new Rect();
-        getWindow().getDecorView().getDrawingRect(scrollBounds);
-        float top = view.getY();
-        float bottom = top + view.getHeight();
-        return scrollBounds.top < top && scrollBounds.bottom > bottom;
-    }
-
     private void loadNext() {
-        mainViewModel.getNextPhotos().observe(MainActivity.this, new Observer<List<Photo>>() {
+        photosViewModel.getNextPhotos().observe(PhotosActivity.this, new Observer<List<Photo>>() {
             @Override
             public void onChanged(List<Photo> photos) {
                 isLoading = false;
@@ -234,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void start(Context context, String folder) {
-        Intent starter = new Intent(context, MainActivity.class);
+        Intent starter = new Intent(context, PhotosActivity.class);
         starter.putExtra(FOLDER_URL_EXTRA, folder);
         context.startActivity(starter);
     }

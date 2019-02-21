@@ -32,9 +32,9 @@
         </activity>
         <activity
             android:name=".ui.PhotoActivity"
-            android:parentActivityName=".ui.MainActivity" />
+            android:parentActivityName=".ui.PhotosActivity" />
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.PhotosActivity"
             android:parentActivityName=".ui.FoldersActivity">
         </activity>
     </application>
