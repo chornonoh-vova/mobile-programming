@@ -7,9 +7,4 @@
         android:icon="@drawable/ic_grid"
         android:title="Layout"
         app:showAsAction="always" />
-    <item
-        android:id="@+id/settings_item"
-        android:icon="@drawable/ic_settings"
-        android:title="Settings"
-        app:showAsAction="always" />
 </menu>

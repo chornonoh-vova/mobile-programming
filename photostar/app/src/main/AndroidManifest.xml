@@ -22,17 +22,20 @@
             android:parentActivityName=".ui.PhotoActivity"
             android:theme="@style/AppTheme.Menu" />
         <activity
-            android:name=".ui.FoldersActivity" />
-        <activity
-            android:name=".ui.PhotoActivity"
-            android:parentActivityName=".ui.MainActivity" />
-        <activity
-            android:name=".ui.MainActivity">
+            android:name=".ui.FoldersActivity" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.PhotoActivity"
+            android:parentActivityName=".ui.MainActivity" />
+        <activity
+            android:name=".ui.MainActivity"
+            android:parentActivityName=".ui.FoldersActivity">
         </activity>
     </application>
 

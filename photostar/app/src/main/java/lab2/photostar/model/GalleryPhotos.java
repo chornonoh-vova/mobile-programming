@@ -7,6 +7,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GalleryPhotos {
@@ -21,7 +22,12 @@ public class GalleryPhotos {
 
         // loop to convert photos list to folders list
         for (String item: photos) {
-            // TODO: 19/02/19 Add photo folders getting
+            // photo folders getting
+            String tmp = item.substring(0, item.lastIndexOf('/'));
+
+            if (!folders.contains(tmp)) {
+                folders.add(tmp);
+            }
         }
         return folders;
     }
@@ -32,12 +38,12 @@ public class GalleryPhotos {
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
         // define columns
-        String[] projection = { MediaStore.MediaColumns.DATA };
+        String[] projection = { MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DATE_MODIFIED };
 
         // cursor to get all images (like from database)
         // using try-with-resources to auto-close
         try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null,
-                MediaStore.Images.Media.DEFAULT_SORT_ORDER)) {
+                MediaStore.MediaColumns.DATE_MODIFIED)) {
 
             int columnIndexData = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 
@@ -45,6 +51,8 @@ public class GalleryPhotos {
                 photos.add(cursor.getString(columnIndexData));
             }
         }
+
+        Collections.reverse(photos);
 
         return photos;
     }

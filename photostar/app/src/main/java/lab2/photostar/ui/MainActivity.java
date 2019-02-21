@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -30,9 +31,11 @@ import lab2.photostar.ui.adapters.PhotosListAdapter;
 import lab2.photostar.ui.vm.MainViewModel;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String FOLDER_URL_EXTRA = "folder_url_extra";
     private Toolbar mainToolbar;
     private RecyclerView photosList;
     private PhotosListAdapter adapter;
+    private String folder;
 
     private MainViewModel mainViewModel;
 
@@ -46,11 +49,15 @@ public class MainActivity extends AppCompatActivity {
         mainToolbar = findViewById(R.id.main_toolbar);
         photosList = findViewById(R.id.photos_list);
 
-        mainToolbar.setTitle(R.string.app_name);
-        setSupportActionBar(mainToolbar);
-        settings = PreferenceManager.getDefaultSharedPreferences(this);
+        folder = getIntent().getStringExtra(FOLDER_URL_EXTRA);
 
+        mainToolbar.setTitle(Uri.parse(folder).getLastPathSegment());
+        setSupportActionBar(mainToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back);
+        settings = PreferenceManager.getDefaultSharedPreferences(this);
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        mainViewModel.setFolder(folder);
 
         adapter = new PhotosListAdapter(new ArrayList<Photo>(), photoListener);
 
@@ -166,5 +173,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void startPhoto(String photoUrl) {
         PhotoActivity.start(this, photoUrl);
+    }
+
+    public static void start(Context context, String folder) {
+        Intent starter = new Intent(context, MainActivity.class);
+        starter.putExtra(FOLDER_URL_EXTRA, folder);
+        context.startActivity(starter);
     }
 }

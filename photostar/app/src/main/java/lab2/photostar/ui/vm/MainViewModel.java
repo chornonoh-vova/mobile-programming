@@ -17,6 +17,7 @@ import lab2.photostar.model.Photo;
 public class MainViewModel extends AndroidViewModel {
     private PhotoDao photoDao = App.get().getDb().photoDao();
     private GalleryPhotos galleryPhotos;
+    private String folder;
 
     private MutableLiveData<List<Photo>> photos = null;
 
@@ -38,7 +39,7 @@ public class MainViewModel extends AndroidViewModel {
                     List<Photo> photosObj = new ArrayList<>();
 
                     for (String photoUri : photosUri) {
-                        if (photoUri.contains("Wallpapers")) {
+                        if (photoUri.contains(folder)) {
                             Photo photo = new Photo();
                             photo.setPhotoUrl(photoUri);
                             int starCount = photoDao.getStarsForPhoto(photoUri);
@@ -57,5 +58,9 @@ public class MainViewModel extends AndroidViewModel {
 
         }
         return photos;
+    }
+
+    public void setFolder(String folder) {
+        this.folder = folder;
     }
 }
