@@ -1,8 +1,5 @@
 <resources>
     <string name="app_name">PhotoStar</string>
 
-    <string name="title_activity_photo_details">PhotoDetailsActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="action_save">SAVE</string>
+    <string name="action_save">Save</string>
 </resources>

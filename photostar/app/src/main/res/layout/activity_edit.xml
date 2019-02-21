@@ -20,25 +20,29 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <RelativeLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <ImageView
-            android:id="@+id/image_preview"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="360dp"
-            android:layout_margin="8dp" />
+            android:layout_height="match_parent">
 
-        <fragment
-            android:id="@+id/preview_list_fragment"
-            class="lab2.photostar.ui.fragments.FiltersListFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/image_preview"
-            tools:layout="@layout/fragment_filters_list" />
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/image_preview"
+                android:layout_width="match_parent"
+                android:layout_height="360dp"
+                android:layout_margin="8dp" />
+
+            <fragment
+                android:id="@+id/preview_list_fragment"
+                class="lab2.photostar.ui.fragments.FiltersListFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/image_preview"
+                tools:layout="@layout/fragment_filters_list" />
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
