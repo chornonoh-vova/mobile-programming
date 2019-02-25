@@ -8,10 +8,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -29,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import lab2.photostar.R;
 import lab2.photostar.model.Photo;
 import lab2.photostar.ui.adapters.PhotosListAdapter;
+import lab2.photostar.ui.fragments.RenameFileDialog;
 import lab2.photostar.ui.vm.PhotosViewModel;
 
 public class PhotosActivity extends AppCompatActivity {
@@ -62,7 +66,7 @@ public class PhotosActivity extends AppCompatActivity {
         photosViewModel = ViewModelProviders.of(this).get(PhotosViewModel.class);
         photosViewModel.setFolder(folder);
 
-        adapter = new PhotosListAdapter(new ArrayList<Photo>(), photoListener);
+        adapter = new PhotosListAdapter(new ArrayList<Photo>(), photoListener, moreListener);
 
         initPhotosList();
 
@@ -177,6 +181,41 @@ public class PhotosActivity extends AppCompatActivity {
         }
     };
 
+    private PhotosListAdapter.MoreClickListener moreListener = new PhotosListAdapter.MoreClickListener() {
+        @Override
+        public void onMoreClick(View v, final String photoUrl) {
+            PopupMenu popup = new PopupMenu(PhotosActivity.this, v);
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.action_rename:
+                            RenameFileDialog dialog = RenameFileDialog.newInstance(photoUrl);
+                            dialog.setListener(renameFileListener);
+                            dialog.show(getSupportFragmentManager(), "rename_dialog");
+                            return false;
+                        default:
+                            return false;
+                    }
+                }
+            });
+            popup.inflate(R.menu.photo_menu);
+            popup.show();
+        }
+    };
+
+    private RenameFileDialog.EditListener renameFileListener = new RenameFileDialog.EditListener() {
+        @Override
+        public void onRenamed(String oldFilePath, String newFilePath) {
+            showToast(oldFilePath + " renamed to " + newFilePath);
+        }
+
+        @Override
+        public void onCancelled() {
+
+        }
+    };
+
     private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -226,5 +265,9 @@ public class PhotosActivity extends AppCompatActivity {
         Intent starter = new Intent(context, PhotosActivity.class);
         starter.putExtra(FOLDER_URL_EXTRA, folder);
         context.startActivity(starter);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }

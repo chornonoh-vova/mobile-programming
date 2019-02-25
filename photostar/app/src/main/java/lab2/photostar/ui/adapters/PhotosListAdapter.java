@@ -24,11 +24,13 @@ import lab2.photostar.utils.BitmapUtils;
 
 public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.ViewHolder> {
     private final View.OnClickListener listener;
+    private final MoreClickListener moreListener;
     private List<Photo> dataset;
 
-    public PhotosListAdapter(List<Photo> dataset, View.OnClickListener listener) {
+    public PhotosListAdapter(List<Photo> dataset, View.OnClickListener listener, MoreClickListener moreListener) {
         this.dataset = dataset;
         this.listener = listener;
+        this.moreListener = moreListener;
     }
 
     @NonNull
@@ -75,6 +77,13 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
 //                .into(holder.photo);
 
         holder.setStars(photo.getStarCount());
+
+        holder.more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moreListener.onMoreClick(holder.more, photo.getPhotoUrl());
+            }
+        });
     }
 
     @Override
@@ -95,6 +104,7 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
         private TextView photoName;
         private ImageView photo;
         private ImageView[] stars;
+        private ImageView more;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -109,6 +119,8 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
             stars[2] = itemView.findViewById(R.id.photo_star3);
             stars[3] = itemView.findViewById(R.id.photo_star4);
             stars[4] = itemView.findViewById(R.id.photo_star5);
+
+            more = itemView.findViewById(R.id.more);
 
             gallery = new GalleryPhotos(itemView.getContext());
         }
@@ -132,5 +144,9 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
 
     private void runOnUiThread(Runnable r) {
         new Handler(Looper.getMainLooper()).post(r);
+    }
+
+    public interface MoreClickListener {
+        void onMoreClick(View v, String photoUrl);
     }
 }
