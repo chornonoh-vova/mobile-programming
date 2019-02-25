@@ -14,7 +14,7 @@
         android:layout_marginBottom="5dp"
         android:fontFamily="sans-serif-medium" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/thumbnail"
         android:layout_width="@dimen/thumbnail_size"
         android:layout_height="@dimen/thumbnail_size"

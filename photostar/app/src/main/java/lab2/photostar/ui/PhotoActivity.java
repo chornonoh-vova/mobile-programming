@@ -122,9 +122,9 @@ public class PhotoActivity extends AppCompatActivity {
 
     private void setStars(int starsCount) {
         Drawable filled = getDrawable(R.drawable.ic_star);
-//        filled.setTint(Color.WHITE);
+        filled.setTint(Color.WHITE);
         Drawable empty = getDrawable(R.drawable.ic_star_border);
-//        empty.setTint(Color.WHITE);
+        empty.setTint(Color.WHITE);
         for (int i = 0; i < 5; i++) {
             if (i < starsCount) {
                 stars[i].setImageDrawable(filled);
@@ -194,17 +194,14 @@ public class PhotoActivity extends AppCompatActivity {
         WindowManager.LayoutParams attrs = getWindow().getAttributes();
         if (fullscreen) {
             attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-        } else {
-            attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
-        }
-        getWindow().setAttributes(attrs);
-        if (fullscreen) {
             getSupportActionBar().hide();
             starsLayout.setVisibility(View.GONE);
         } else {
+            attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
             getSupportActionBar().show();
             starsLayout.setVisibility(View.VISIBLE);
         }
+        getWindow().setAttributes(attrs);
     }
 
     private void showToast(String message) {

@@ -40,10 +40,11 @@ public class GalleryPhotos {
         // define columns
         String[] projection = { MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DATE_MODIFIED };
 
+        String sortOrder = MediaStore.MediaColumns.DATE_ADDED + " DESC";
+
         // cursor to get all images (like from database)
         // using try-with-resources to auto-close
-        try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null,
-                MediaStore.MediaColumns.DATE_MODIFIED)) {
+        try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null, sortOrder)) {
 
             int columnIndexData = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 
@@ -51,8 +52,6 @@ public class GalleryPhotos {
                 photos.add(cursor.getString(columnIndexData));
             }
         }
-
-        Collections.reverse(photos);
 
         return photos;
     }

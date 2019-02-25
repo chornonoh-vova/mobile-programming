@@ -81,13 +81,13 @@ public class PhotosActivity extends AppCompatActivity {
     }
 
     private void runLayoutAnimation(final RecyclerView recyclerView) {
-        final Context context = recyclerView.getContext();
-        final LayoutAnimationController controller =
-                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
-
-        recyclerView.setLayoutAnimation(controller);
+//        final Context context = recyclerView.getContext();
+//        final LayoutAnimationController controller =
+//                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
+//
+//        recyclerView.setLayoutAnimation(controller);
         adapter.notifyDataSetChanged();
-        recyclerView.scheduleLayoutAnimation();
+//        recyclerView.scheduleLayoutAnimation();
     }
 
 

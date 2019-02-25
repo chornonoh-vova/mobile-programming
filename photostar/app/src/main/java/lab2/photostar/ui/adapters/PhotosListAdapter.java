@@ -2,6 +2,7 @@ package lab2.photostar.ui.adapters;
 
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -49,32 +52,33 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
 
         holder.photoName.setText(photoUri.getLastPathSegment());
 
-        runTask(new Runnable() {
-            @Override
-            public void run() {
-                ContentResolver cr = holder.itemView.getContext().getContentResolver();
+//        runTask(new Runnable() {
+//            @Override
+//            public void run() {
+//                ContentResolver cr = holder.itemView.getContext().getContentResolver();
+//
+//                final Bitmap photoBitmap = BitmapUtils.centerCrop(
+//                        MediaStore.Images.Thumbnails.getThumbnail(cr,
+//                        holder.gallery.getThumbId(photo.getPhotoUrl()),
+//                        MediaStore.Images.Thumbnails.MINI_KIND, null));
+//
+//
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        holder.photo.setImageBitmap(photoBitmap);
+//                    }
+//                });
+//            }
+//        });
 
-                final Bitmap photoBitmap = BitmapUtils.centerCrop(
-                        MediaStore.Images.Thumbnails.getThumbnail(cr,
-                        holder.gallery.getThumbId(photo.getPhotoUrl()),
-                        MediaStore.Images.Thumbnails.MINI_KIND, null));
-
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        holder.photo.setImageBitmap(photoBitmap);
-                    }
-                });
-            }
-        });
-
-//        Picasso.get()
-//                .load("file:" + photo.getPhotoUrl())
-//                .placeholder(R.drawable.ic_image_placeholder)
-//                .resize(200, 200)
-//                .centerCrop()
-//                .into(holder.photo);
+        Picasso.get()
+                .load("file:" + photo.getPhotoUrl())
+                .placeholder(R.drawable.ic_image_placeholder)
+                .error(R.drawable.ic_error_outline)
+                .resize(200, 200)
+                .centerCrop()
+                .into(holder.photo);
 
         holder.setStars(photo.getStarCount());
 
@@ -127,7 +131,9 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
 
         public void setStars(int starsCount) {
             Drawable filled = itemView.getContext().getDrawable(R.drawable.ic_star);
+            filled.setTint(Color.BLACK);
             Drawable empty = itemView.getContext().getDrawable(R.drawable.ic_star_border);
+            empty.setTint(Color.BLACK);
             for (int i = 0; i < 5; i++) {
                 if (i < starsCount) {
                     stars[i].setImageDrawable(filled);
