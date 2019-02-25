@@ -207,12 +207,17 @@ public class PhotosActivity extends AppCompatActivity {
     private RenameFileDialog.EditListener renameFileListener = new RenameFileDialog.EditListener() {
         @Override
         public void onRenamed(String oldFilePath, String newFilePath) {
-            showToast(oldFilePath + " renamed to " + newFilePath);
+            for (int i = 0; i < adapter.getDataset().size(); i++) {
+                if (adapter.getDataset().get(i).getPhotoUrl().equals(oldFilePath)) {
+                    adapter.getDataset().get(i).setPhotoUrl(newFilePath);
+                    runLayoutAnimation(photosList);
+                }
+            }
         }
 
         @Override
         public void onCancelled() {
-
+            showToast("Renaming cancelled");
         }
     };
 
@@ -237,7 +242,7 @@ public class PhotosActivity extends AppCompatActivity {
             if (!isLoading) {
                 if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                         && firstVisibleItemPosition >= 0
-                        && totalItemCount >= 20) {
+                        && totalItemCount >= 10) {
                     loadNext();
                 }
             }

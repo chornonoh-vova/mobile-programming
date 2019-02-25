@@ -88,6 +88,7 @@ public class RenameFileDialog extends DialogFragment {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                listener.onCancelled();
                 getDialog().dismiss();
             }
         });

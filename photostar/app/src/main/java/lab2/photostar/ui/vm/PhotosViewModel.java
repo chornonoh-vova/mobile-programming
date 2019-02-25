@@ -19,7 +19,7 @@ public class PhotosViewModel extends AndroidViewModel {
     private GalleryPhotos galleryPhotos;
     private String folder;
 
-    private static final int loadStep = 20;
+    private static final int loadStep = 10;
     private int lastItem;
     private int totalItemCount;
 
