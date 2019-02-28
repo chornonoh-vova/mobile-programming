@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">PhotoStar</string>
-
+    <string-array name="sort_items">
+        <item>Sort by stars ascending</item>
+        <item>Sort by stars descending</item>
+    </string-array>
     <string name="action_save">Save</string>
 </resources>

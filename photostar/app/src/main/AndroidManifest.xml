@@ -19,10 +19,12 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".ui.EditActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".ui.PhotoActivity"
             android:theme="@style/AppTheme.Menu" />
         <activity
-            android:name=".ui.FoldersActivity" >
+            android:name=".ui.FoldersActivity"
+            android:launchMode="singleTop" >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,11 +34,12 @@
         </activity>
         <activity
             android:name=".ui.PhotoActivity"
-            android:parentActivityName=".ui.PhotosActivity" />
+            android:parentActivityName=".ui.PhotosActivity"
+            android:launchMode="singleTop" />
         <activity
             android:name=".ui.PhotosActivity"
-            android:parentActivityName=".ui.FoldersActivity">
-        </activity>
+            android:parentActivityName=".ui.FoldersActivity"
+            android:launchMode="singleTop" />
     </application>
 
 </manifest>

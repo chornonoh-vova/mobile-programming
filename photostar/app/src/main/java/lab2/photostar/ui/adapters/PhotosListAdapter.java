@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -31,7 +32,7 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
     private List<Photo> dataset;
 
     public PhotosListAdapter(List<Photo> dataset, View.OnClickListener listener, MoreClickListener moreListener) {
-        this.dataset = dataset;
+        this.dataset = Collections.synchronizedList(dataset);
         this.listener = listener;
         this.moreListener = moreListener;
     }
@@ -100,7 +101,7 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Vi
     }
 
     public void setDataset(List<Photo> dataset) {
-        this.dataset = dataset;
+        this.dataset = Collections.synchronizedList(dataset);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

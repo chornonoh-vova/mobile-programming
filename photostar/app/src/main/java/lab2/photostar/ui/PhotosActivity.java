@@ -13,6 +13,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -41,6 +44,7 @@ public class PhotosActivity extends AppCompatActivity {
     private RecyclerView photosList;
     private PhotosListAdapter adapter;
     private String folder;
+    private Spinner sort;
 
     private boolean isLoading = true;
 
@@ -55,8 +59,13 @@ public class PhotosActivity extends AppCompatActivity {
 
         mainToolbar = findViewById(R.id.main_toolbar);
         photosList = findViewById(R.id.photos_list);
+        sort = findViewById(R.id.sort);
 
-        folder = getIntent().getStringExtra(FOLDER_URL_EXTRA);
+        if (savedInstanceState == null) {
+            folder = getIntent().getStringExtra(FOLDER_URL_EXTRA);
+        } else {
+            folder = savedInstanceState.getString(FOLDER_URL_EXTRA);
+        }
 
         mainToolbar.setTitle(Uri.parse(folder).getLastPathSegment());
         setSupportActionBar(mainToolbar);
@@ -78,16 +87,46 @@ public class PhotosActivity extends AppCompatActivity {
                 runLayoutAnimation(photosList);
             }
         });
+
+        ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(this, R.array.sort_items, android.R.layout.simple_spinner_item);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sort.setAdapter(arrayAdapter);
+        sort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch ((int) id) {
+                    case 0:
+                        photosViewModel.sortPhotosStarsAsc();
+                        runLayoutAnimation(photosList);
+                        break;
+                    case 1:
+                        photosViewModel.sortPhotosStarsDesc();
+                        runLayoutAnimation(photosList);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(FOLDER_URL_EXTRA, folder);
     }
 
     private void runLayoutAnimation(final RecyclerView recyclerView) {
-//        final Context context = recyclerView.getContext();
-//        final LayoutAnimationController controller =
-//                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
-//
-//        recyclerView.setLayoutAnimation(controller);
+        final Context context = recyclerView.getContext();
+        final LayoutAnimationController controller =
+                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
+
+        recyclerView.setLayoutAnimation(controller);
         adapter.notifyDataSetChanged();
-//        recyclerView.scheduleLayoutAnimation();
+        recyclerView.scheduleLayoutAnimation();
     }
 
 

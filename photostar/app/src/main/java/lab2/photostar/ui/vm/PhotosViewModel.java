@@ -3,6 +3,8 @@ package lab2.photostar.ui.vm;
 import android.app.Application;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -23,7 +25,7 @@ public class PhotosViewModel extends AndroidViewModel {
     private int lastItem;
     private int totalItemCount;
 
-    private List<Photo> photosList = new ArrayList<>();
+    private List<Photo> photosList = Collections.synchronizedList(new ArrayList<Photo>());
     private MutableLiveData<List<Photo>> photos = null;
 
     public PhotosViewModel(@NonNull Application application) {
@@ -81,11 +83,29 @@ public class PhotosViewModel extends AndroidViewModel {
                 lastItem = loadStep;
             }
 
-            photos.postValue(photosList.subList(0, lastItem));
+            photos.postValue(photosList);
         }
     };
 
     public void setFolder(String folder) {
         this.folder = folder;
+    }
+
+    public void sortPhotosStarsAsc(){
+        Collections.sort(photosList, new Comparator<Photo>() {
+            @Override
+            public int compare(Photo o1, Photo o2) {
+                return o1.getStarCount() - o2.getStarCount();
+            }
+        });
+    }
+
+    public void sortPhotosStarsDesc(){
+        Collections.sort(photosList, new Comparator<Photo>() {
+            @Override
+            public int compare(Photo o1, Photo o2) {
+                return o2.getStarCount() - o1.getStarCount();
+            }
+        });
     }
 }
