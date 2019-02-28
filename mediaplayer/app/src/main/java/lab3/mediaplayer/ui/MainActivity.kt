@@ -1,7 +1,9 @@
-package lab3.mediaplayer
+package lab3.mediaplayer.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import kotlinx.android.synthetic.main.activity_main.*
+import lab3.mediaplayer.R
 import lab3.mediaplayer.media.library.BrowseLibrary
 import lab3.mediaplayer.media.library.LocalMusicSource
 
@@ -18,5 +20,8 @@ class MainActivity : AppCompatActivity() {
 
         println(browseLibrary)
 
+        music_library_button.setOnClickListener {
+            MusicLibraryActivity.start(this)
+        }
     }
 }

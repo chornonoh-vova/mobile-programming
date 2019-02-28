@@ -36,5 +36,8 @@ class BrowseLibrary(musicSource: Iterable<MediaMetadataCompat>) {
 
     companion object {
         const val BROWSABLE_ROOT = "/"
+        const val ARTISTS = "artists"
+        const val ALBUMS = "albums"
+        const val SONGS = "songs"
     }
 }
