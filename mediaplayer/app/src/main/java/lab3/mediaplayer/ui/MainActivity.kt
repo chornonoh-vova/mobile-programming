@@ -1,7 +1,7 @@
 package lab3.mediaplayer.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import lab3.mediaplayer.R
 import lab3.mediaplayer.media.library.BrowseLibrary
@@ -19,6 +19,9 @@ class MainActivity : AppCompatActivity() {
         browseLibrary = BrowseLibrary(musicSource)
 
         println(browseLibrary)
+
+        main_toolbar.setTitle(R.string.app_name)
+        setSupportActionBar(main_toolbar)
 
         music_library_button.setOnClickListener {
             MusicLibraryActivity.start(this)

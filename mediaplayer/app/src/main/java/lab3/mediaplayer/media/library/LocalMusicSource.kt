@@ -8,7 +8,7 @@ import android.support.v4.media.MediaMetadataCompat
 import lab3.mediaplayer.model.SongItem
 import lab3.mediaplayer.model.from
 
-class LocalMusicSource(private val context: Context): Iterable<MediaMetadataCompat> {
+class LocalMusicSource(private val context: Context) : Iterable<MediaMetadataCompat> {
     private var catalog: MutableList<MediaMetadataCompat> = mutableListOf()
 
     init {

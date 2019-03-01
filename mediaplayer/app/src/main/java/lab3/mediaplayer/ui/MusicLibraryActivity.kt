@@ -2,13 +2,12 @@ package lab3.mediaplayer.ui
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
-import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_music_library.*
 import lab3.mediaplayer.R
 
@@ -22,18 +21,9 @@ class MusicLibraryActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
 
-        tabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-            override fun onTabReselected(p0: TabLayout.Tab?) {}
-
-            override fun onTabUnselected(p0: TabLayout.Tab?) {}
-
-            override fun onTabSelected(p0: TabLayout.Tab) {
-                content_viewpager.currentItem = p0.position
-            }
-
-        })
-
         setupViewPager(content_viewpager)
+
+        tabs.setupWithViewPager(content_viewpager)
     }
 
     private fun setupViewPager(viewPager: ViewPager) {
@@ -42,7 +32,7 @@ class MusicLibraryActivity : AppCompatActivity() {
         viewPager.adapter = adapter
     }
 
-    class ViewPagerAdapter(fm: FragmentManager): FragmentPagerAdapter(fm) {
+    class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
         private val fragmentList = mutableListOf<Fragment>()
         private val fragmentTitles = mutableListOf<String>()
 

@@ -2,7 +2,7 @@ package lab3.mediaplayer.model
 
 import android.support.v4.media.MediaMetadataCompat
 
-data class SongItem (
+data class SongItem(
     val id: String,
     val title: String,
     val artist: String,

@@ -1,7 +1,7 @@
 package lab3.mediaplayer.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import lab3.mediaplayer.R
 
 class VideoLibraryActivity : AppCompatActivity() {
