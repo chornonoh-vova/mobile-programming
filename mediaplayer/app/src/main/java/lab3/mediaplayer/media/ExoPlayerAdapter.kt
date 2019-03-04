@@ -1,10 +1,15 @@
 package lab3.mediaplayer.media
 
 import android.content.Context
+import android.media.MediaExtractor
+import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.extractor.ExtractorsFactory
+import com.google.android.exoplayer2.extractor.mp3.Mp3Extractor
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
@@ -31,13 +36,14 @@ class ExoPlayerAdapter(context: Context) : PlayerAdapter {
         context,
         Util.getUserAgent(
             context,
-            context.applicationInfo.nonLocalizedLabel.toString()
+            "MediaPlayer"
         )
     )
 
-    override fun prepare(mediaMetadataCompat: MediaMetadataCompat) {
+    override fun prepare(mediaDescriptionCompat: MediaDescriptionCompat) {
         val mediaSource = ExtractorMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(mediaMetadataCompat.description.mediaUri)
+            .setExtractorsFactory(DefaultExtractorsFactory())
+            .createMediaSource(mediaDescriptionCompat.mediaUri)
         player.prepare(mediaSource)
     }
 
@@ -70,4 +76,6 @@ class ExoPlayerAdapter(context: Context) : PlayerAdapter {
     }
 
     override fun isPlaying() = playing
+
+    override fun getPosition() = player.contentPosition
 }

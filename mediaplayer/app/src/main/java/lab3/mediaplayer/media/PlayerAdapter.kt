@@ -1,5 +1,6 @@
 package lab3.mediaplayer.media
 
+import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 
 /**
@@ -11,7 +12,7 @@ interface PlayerAdapter {
     /**
      * Prepare media for playing
      */
-    fun prepare(mediaMetadataCompat: MediaMetadataCompat)
+    fun prepare(mediaDescriptionCompat: MediaDescriptionCompat)
 
     /**
      * Play prepared media
@@ -47,4 +48,6 @@ interface PlayerAdapter {
      * Method to get playing state
      */
     fun isPlaying(): Boolean
+
+    fun getPosition(): Long
 }
