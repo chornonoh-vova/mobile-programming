@@ -9,4 +9,8 @@
         <item name="colorAccent">@color/secondaryColor</item>
     </style>
 
+    <style name="PlayerControl" parent="Widget.MaterialComponents.Button.OutlinedButton.Icon">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
 </resources>

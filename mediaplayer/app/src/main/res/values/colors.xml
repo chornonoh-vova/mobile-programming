@@ -8,4 +8,5 @@
     <color name="secondaryDarkColor">#00574b</color>
     <color name="primaryTextColor">#ffffff</color>
     <color name="secondaryTextColor">#ffffff</color>
+    <color name="notification_bg">#ff424242</color>
 </resources>

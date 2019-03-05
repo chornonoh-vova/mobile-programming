@@ -24,5 +24,11 @@ fun MediaMetadataCompat.Builder.from(item: SongItem): MediaMetadataCompat.Builde
     putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, item.mediaUri)
     putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, item.albumArtUri)
 
+    // for notifications
+    putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, item.title)
+    putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, item.artist)
+    putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, item.album)
+    putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, item.albumArtUri)
+
     return this
 }

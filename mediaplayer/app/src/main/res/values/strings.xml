@@ -3,4 +3,10 @@
     <string name="music_service_title">Music playback service</string>
     <string name="music_library_title">Music library</string>
     <string name="my_music_button">My music</string>
+    <string name="notification_skip_to_previous">Skip to previous</string>
+    <string name="notification_play">Play</string>
+    <string name="notification_pause">Pause</string>
+    <string name="notification_skip_to_next">Skip to next</string>
+    <string name="notification_channel">Music player</string>
+    <string name="notification_channel_description">Music player for media playback service</string>
 </resources>

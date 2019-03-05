@@ -96,5 +96,54 @@ class LocalMusicSource(private val context: Context) : Iterable<MediaMetadataCom
             }
             return bitmapUri
         }
+
+        fun getMetadataForMediaId(context: Context, mediaId: String): MediaMetadataCompat {
+            val cr = context.contentResolver
+
+            val musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+
+            val artworkUri = Uri.parse("content://media/external/audio/albumart")
+
+            val proj = arrayOf(
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.DURATION,
+
+                MediaStore.Audio.Media.DATA,
+
+                MediaStore.Audio.Media.ALBUM_ID
+            )
+
+            val selection = "${MediaStore.Audio.Media.IS_MUSIC} = 1 and ${MediaStore.Audio.Media._ID} = $mediaId"
+
+            lateinit var mediaMetadataCompat: MediaMetadataCompat
+
+            cr.query(musicUri, proj, selection, null, null).use {
+                if (it != null) {
+                    val id = it.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+                    val title = it.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
+                    val artist = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+                    val album = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
+                    val duration = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+                    val data = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+                    val albumId = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
+
+                    if (it.moveToFirst()) {
+                        mediaMetadataCompat =
+                            MediaMetadataCompat.Builder().from(
+                                SongItem(
+                                    it.getString(id), it.getString(title),
+                                    it.getString(artist), it.getString(album),
+                                    it.getLong(duration), it.getString(data),
+                                    ContentUris.withAppendedId(artworkUri, it.getLong(albumId)).toString()
+                                )
+                            ).build()
+                    }
+                }
+            }
+            return mediaMetadataCompat
+        }
     }
 }

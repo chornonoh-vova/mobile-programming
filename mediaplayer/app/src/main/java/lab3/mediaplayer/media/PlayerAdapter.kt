@@ -1,7 +1,6 @@
 package lab3.mediaplayer.media
 
 import android.support.v4.media.MediaDescriptionCompat
-import android.support.v4.media.MediaMetadataCompat
 
 /**
  * Interface for all players implementations.
@@ -50,4 +49,10 @@ interface PlayerAdapter {
     fun isPlaying(): Boolean
 
     fun getPosition(): Long
+
+    fun setOnEndedListener(listener: EndedListener)
+
+    interface EndedListener {
+        fun onEnded()
+    }
 }
