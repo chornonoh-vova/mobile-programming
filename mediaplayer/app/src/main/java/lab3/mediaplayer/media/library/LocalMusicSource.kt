@@ -2,15 +2,11 @@ package lab3.mediaplayer.media.library
 
 import android.content.ContentUris
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import android.support.v4.media.MediaMetadataCompat
 import lab3.mediaplayer.model.SongItem
 import lab3.mediaplayer.model.from
-import android.os.ParcelFileDescriptor
-import com.squareup.picasso.Picasso
 
 
 class LocalMusicSource(private val context: Context) : Iterable<MediaMetadataCompat> {
@@ -88,7 +84,13 @@ class LocalMusicSource(private val context: Context) : Iterable<MediaMetadataCom
                     }
                 }
             }
-            cr.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, arrayOf(MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART), null, null, null).use {
+            cr.query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                arrayOf(MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART),
+                null,
+                null,
+                null
+            ).use {
                 while (it.moveToNext()) {
                     println(it.getString(it.getColumnIndex(MediaStore.Audio.Albums._ID)))
                     println(it.getString(it.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)))

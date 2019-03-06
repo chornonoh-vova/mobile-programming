@@ -3,25 +3,25 @@ package lab3.mediaplayer.media
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
-import androidx.media.session.MediaButtonReceiver
-
-import android.support.v4.media.session.PlaybackStateCompat.ACTION_PAUSE
-import android.support.v4.media.session.PlaybackStateCompat.ACTION_PLAY
-import android.support.v4.media.session.PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-import android.support.v4.media.session.PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-import android.support.v4.media.session.PlaybackStateCompat.ACTION_STOP
+import android.support.v4.media.session.PlaybackStateCompat.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import lab3.mediaplayer.*
+import androidx.media.session.MediaButtonReceiver
+import lab3.mediaplayer.R
+import lab3.mediaplayer.isPlaying
+import lab3.mediaplayer.ui.MusicLibraryActivity
 
 const val NOW_PLAYING_CHANNEL: String = "lab3.mediaplayer.music.NOW_PLAYING"
 const val NOW_PLAYING_NOTIFICATION: Int = 0xb339
+const val REQUEST_CODE = 501
 
 class NotificationBuilder(private val context: Context) {
     private val platformNotificationManager: NotificationManager =
@@ -30,22 +30,26 @@ class NotificationBuilder(private val context: Context) {
     private val skipToPreviousAction = NotificationCompat.Action(
         R.drawable.exo_controls_previous,
         context.getString(R.string.notification_skip_to_previous),
-        MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_SKIP_TO_PREVIOUS))
+        MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_SKIP_TO_PREVIOUS)
+    )
 
     private val playAction = NotificationCompat.Action(
         R.drawable.exo_controls_play,
         context.getString(R.string.notification_play),
-        MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_PLAY))
+        MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_PLAY)
+    )
 
     private val pauseAction = NotificationCompat.Action(
         R.drawable.exo_controls_pause,
         context.getString(R.string.notification_pause),
-        MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_PAUSE))
+        MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_PAUSE)
+    )
 
     private val skipToNextAction = NotificationCompat.Action(
         R.drawable.exo_controls_next,
         context.getString(R.string.notification_skip_to_next),
-        MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_SKIP_TO_NEXT))
+        MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_SKIP_TO_NEXT)
+    )
 
     private val stopPendingIntent =
         MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_STOP)
@@ -77,7 +81,7 @@ class NotificationBuilder(private val context: Context) {
             .setShowActionsInCompactView(1, 2)
             .setShowCancelButton(true)
 
-        return builder.setContentIntent(controller.sessionActivity)
+        return builder.setContentIntent(createContentIntent())
             .setColor(ContextCompat.getColor(context, R.color.notification_bg))
             .setContentTitle(description.title)
             .setContentText(description.subtitle)
@@ -101,13 +105,22 @@ class NotificationBuilder(private val context: Context) {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNowPlayingChannel() {
-        val notificationChannel = NotificationChannel(NOW_PLAYING_CHANNEL,
+        val notificationChannel = NotificationChannel(
+            NOW_PLAYING_CHANNEL,
             context.getString(R.string.notification_channel),
-            NotificationManager.IMPORTANCE_LOW)
+            NotificationManager.IMPORTANCE_LOW
+        )
             .apply {
                 description = context.getString(R.string.notification_channel_description)
             }
 
         platformNotificationManager.createNotificationChannel(notificationChannel)
+    }
+
+    private fun createContentIntent(): PendingIntent {
+        val openUi = Intent(context, MusicLibraryActivity::class.java)
+        openUi.putExtra(MusicLibraryActivity.EXPAND_PLAYER_KEY, true)
+        openUi.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        return PendingIntent.getActivity(context, REQUEST_CODE, openUi, PendingIntent.FLAG_CANCEL_CURRENT)
     }
 }

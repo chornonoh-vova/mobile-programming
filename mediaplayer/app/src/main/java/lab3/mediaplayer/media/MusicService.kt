@@ -54,16 +54,20 @@ class MusicService : MediaBrowserServiceCompat() {
         browseLibrary = BrowseLibrary(musicSource)
 
         mediaSession = MediaSessionCompat(baseContext, "MUSIC_SERVICE_LOG").apply {
-            setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
-                    or MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS
-                    or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
+            setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+                        or MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS
+                        or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+            )
 
-            stateBuilder = PlaybackStateCompat.Builder().setActions(PlaybackStateCompat.ACTION_PLAY
-                    or PlaybackStateCompat.ACTION_PAUSE
-                    or PlaybackStateCompat.ACTION_PLAY_PAUSE
-                    or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                    or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                    or PlaybackStateCompat.ACTION_STOP)
+            stateBuilder = PlaybackStateCompat.Builder().setActions(
+                PlaybackStateCompat.ACTION_PLAY
+                        or PlaybackStateCompat.ACTION_PAUSE
+                        or PlaybackStateCompat.ACTION_PLAY_PAUSE
+                        or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                        or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                        or PlaybackStateCompat.ACTION_STOP
+            )
 
             setPlaybackState(stateBuilder.build())
 
@@ -76,7 +80,7 @@ class MusicService : MediaBrowserServiceCompat() {
             it.registerCallback(MediaControllerCallback())
         }
 
-        playerAdapter.setOnEndedListener(object: PlayerAdapter.EndedListener {
+        playerAdapter.setOnEndedListener(object : PlayerAdapter.EndedListener {
             override fun onEnded() {
                 mediaController.transportControls.skipToNext()
             }
@@ -141,25 +145,31 @@ class MusicService : MediaBrowserServiceCompat() {
                 onPrepare()
             }
 //            startService(Intent(applicationContext, this@MusicService.javaClass))
-            mediaSession.setPlaybackState(stateBuilder
-                .setState(PlaybackStateCompat.STATE_PLAYING, playerAdapter.getPosition(), 1.0f)
-                .build())
+            mediaSession.setPlaybackState(
+                stateBuilder
+                    .setState(PlaybackStateCompat.STATE_PLAYING, playerAdapter.getPosition(), 1.0f)
+                    .build()
+            )
             mediaSession.setMetadata(playlist[currentPlayingIndex].toMetadata())
             playerAdapter.setVolume(1.0f)
             playerAdapter.play()
         }
 
         override fun onPause() {
-            mediaSession.setPlaybackState(stateBuilder
-                .setState(PlaybackStateCompat.STATE_PAUSED, playerAdapter.getPosition(), 1.0f)
-                .build())
+            mediaSession.setPlaybackState(
+                stateBuilder
+                    .setState(PlaybackStateCompat.STATE_PAUSED, playerAdapter.getPosition(), 1.0f)
+                    .build()
+            )
             playerAdapter.pause()
         }
 
         override fun onStop() {
-            mediaSession.setPlaybackState(stateBuilder
-                .setState(PlaybackStateCompat.STATE_STOPPED, playerAdapter.getPosition(), 1.0f)
-                .build())
+            mediaSession.setPlaybackState(
+                stateBuilder
+                    .setState(PlaybackStateCompat.STATE_STOPPED, playerAdapter.getPosition(), 1.0f)
+                    .build()
+            )
             stopSelf()
 //            mediaSession.isActive = false
             playerAdapter.stop()
@@ -167,9 +177,11 @@ class MusicService : MediaBrowserServiceCompat() {
         }
 
         override fun onSkipToNext() {
-            mediaSession.setPlaybackState(stateBuilder
-                .setState(PlaybackStateCompat.STATE_SKIPPING_TO_NEXT, playerAdapter.getPosition(), 1.0f)
-                .build())
+            mediaSession.setPlaybackState(
+                stateBuilder
+                    .setState(PlaybackStateCompat.STATE_SKIPPING_TO_NEXT, playerAdapter.getPosition(), 1.0f)
+                    .build()
+            )
             currentPlayingIndex++
 
             if (currentPlayingIndex == playlist.size) {
@@ -180,10 +192,18 @@ class MusicService : MediaBrowserServiceCompat() {
             onPlay()
         }
 
+        override fun onSkipToQueueItem(id: Long) {
+            if (id != 0L) {
+                currentPlayingIndex = id.toInt()
+            }
+        }
+
         override fun onSkipToPrevious() {
-            mediaSession.setPlaybackState(stateBuilder
-                .setState(PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS, playerAdapter.getPosition(), 1.0f)
-                .build())
+            mediaSession.setPlaybackState(
+                stateBuilder
+                    .setState(PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS, playerAdapter.getPosition(), 1.0f)
+                    .build()
+            )
             currentPlayingIndex--
             if (currentPlayingIndex == -1) {
                 currentPlayingIndex = playlist.size - 1
@@ -246,7 +266,9 @@ class MusicService : MediaBrowserServiceCompat() {
                         startService(Intent(applicationContext, this@MusicService.javaClass))
                         startForeground(NOW_PLAYING_NOTIFICATION, notification)
                         isForegroundService = true
-//                        updateProgressBar()
+
+                        // start emitting position changes
+                        updateProgressBar()
                     } else if (notification != null) {
                         notificationManager.notify(NOW_PLAYING_NOTIFICATION, notification)
                     }
@@ -274,20 +296,19 @@ class MusicService : MediaBrowserServiceCompat() {
         }
     }
 
-    private var currentPosition = 0L
-
     private fun updateProgressBar() {
         val handler = Handler(Looper.getMainLooper())
 
-        currentPosition += 1000L
-
-        mediaSession.setPlaybackState(stateBuilder
-            .setState(mediaController.playbackState.state, currentPosition, 1.0f)
-            .build())
+        mediaSession.setPlaybackState(
+            stateBuilder
+                .setState(mediaController.playbackState.state, playerAdapter.getPosition(), 1.0f)
+                .build()
+        )
 
         // Remove scheduled updates.
         handler.removeCallbacks(updateProgressAction)
 
+        //Schedule the same update a second after
         handler.postDelayed(updateProgressAction, 1000L)
     }
 
@@ -295,9 +316,10 @@ class MusicService : MediaBrowserServiceCompat() {
 
 }
 
-private class BecomingNoisyReceiver(private val context: Context,
-                                    sessionToken: MediaSessionCompat.Token)
-    : BroadcastReceiver() {
+private class BecomingNoisyReceiver(
+    private val context: Context,
+    sessionToken: MediaSessionCompat.Token
+) : BroadcastReceiver() {
 
     private val noisyIntentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
     private val controller = MediaControllerCompat(context, sessionToken)

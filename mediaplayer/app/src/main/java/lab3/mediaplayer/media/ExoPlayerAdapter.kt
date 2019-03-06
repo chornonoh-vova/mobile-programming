@@ -1,17 +1,11 @@
 package lab3.mediaplayer.media
 
 import android.content.Context
-import android.media.MediaExtractor
 import android.support.v4.media.MediaDescriptionCompat
-import android.support.v4.media.MediaMetadataCompat
 import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.extractor.ExtractorsFactory
-import com.google.android.exoplayer2.extractor.mp3.Mp3Extractor
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
@@ -81,7 +75,7 @@ class ExoPlayerAdapter(context: Context) : PlayerAdapter {
     override fun getPosition() = player.contentPosition
 
     override fun setOnEndedListener(listener: PlayerAdapter.EndedListener) {
-        player.addListener(object: Player.EventListener {
+        player.addListener(object : Player.EventListener {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
                     listener.onEnded()
