@@ -12,7 +12,7 @@ import lab3.mediaplayer.model.VideoItem
 class VideosListAdapter(
     private val dataset: List<VideoItem>,
     private val itemListener: (VideoItem) -> Unit
-): RecyclerView.Adapter<VideosListAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<VideosListAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_video, parent, false))
 
@@ -22,7 +22,8 @@ class VideosListAdapter(
         val video = dataset[position]
 
         holder.videoTitle.text = video.title
-        holder.videoSize.text = holder.itemView.context.getString(R.string.video_size, (video.size.toFloat() / (1024 * 1024)))
+        holder.videoSize.text =
+            holder.itemView.context.getString(R.string.video_size, (video.size.toFloat() / (1024 * 1024)))
         holder.videDuration.text = getTime(video.duration)
 
         holder.itemView.setOnClickListener {
@@ -39,7 +40,7 @@ class VideosListAdapter(
         return "$minutes:$seconds"
     }
 
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val videoThumbnail: ImageView by lazy {
             itemView.findViewById<ImageView>(R.id.video_thumbnail)
         }

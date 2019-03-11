@@ -16,7 +16,7 @@ import lab3.mediaplayer.model.SongItem
 import lab3.mediaplayer.ui.MusicLibraryActivity
 import lab3.mediaplayer.ui.adapters.SongListAdapter
 
-class SongsFragment: Fragment() {
+class SongsFragment : Fragment() {
 
     private lateinit var songItemList: List<SongItem>
     private lateinit var adapter: SongListAdapter
@@ -41,7 +41,10 @@ class SongsFragment: Fragment() {
     private val itemListener: (Int) -> Unit = {
         if (activity != null) {
             (activity as MusicLibraryActivity).playStartIndex = it
-            (activity as MusicLibraryActivity).mediaBrowser.subscribe(BrowseLibrary.SONGS, (activity as MusicLibraryActivity).browseAllSongs())
+            (activity as MusicLibraryActivity).mediaBrowser.subscribe(
+                BrowseLibrary.SONGS,
+                (activity as MusicLibraryActivity).browseAllSongs()
+            )
         }
     }
 }

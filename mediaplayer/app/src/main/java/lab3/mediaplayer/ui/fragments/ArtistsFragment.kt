@@ -15,7 +15,7 @@ import lab3.mediaplayer.model.ArtistItem
 import lab3.mediaplayer.ui.ArtistSongsActivity
 import lab3.mediaplayer.ui.adapters.ArtistsListAdapter
 
-class ArtistsFragment: Fragment() {
+class ArtistsFragment : Fragment() {
 
     private lateinit var artistsItemList: List<ArtistItem>
     private lateinit var adapter: ArtistsListAdapter

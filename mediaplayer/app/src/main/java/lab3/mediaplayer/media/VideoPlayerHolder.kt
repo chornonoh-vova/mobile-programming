@@ -3,7 +3,6 @@ package lab3.mediaplayer.media
 import android.content.Context
 import android.net.Uri
 import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -15,9 +14,11 @@ import com.google.android.exoplayer2.util.Util
 import lab3.mediaplayer.model.VideoItem
 import java.io.File
 
-data class PlayerState(var window: Int = 0,
-                       var position: Long = 0,
-                       var whenReady: Boolean = true)
+data class PlayerState(
+    var window: Int = 0,
+    var position: Long = 0,
+    var whenReady: Boolean = true
+)
 
 class VideoPlayerHolder(
     private val context: Context,

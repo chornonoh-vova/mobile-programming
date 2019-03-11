@@ -29,14 +29,16 @@ object LocalVideoSource {
                 val data = it.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
 
                 while (it.moveToNext()) {
-                    result.add(VideoItem(
-                        it.getString(id),
-                        it.getString(title),
-                        it.getString(desc) ?: "",
-                        it.getInt(duration),
-                        it.getInt(size),
-                        it.getString(data)
-                    ))
+                    result.add(
+                        VideoItem(
+                            it.getString(id),
+                            it.getString(title),
+                            it.getString(desc) ?: "",
+                            it.getInt(duration),
+                            it.getInt(size),
+                            it.getString(data)
+                        )
+                    )
                 }
             }
         }

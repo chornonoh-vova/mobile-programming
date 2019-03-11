@@ -10,7 +10,6 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_music_library.*
 import lab3.mediaplayer.R
-import lab3.mediaplayer.media.library.BrowseLibrary
 import lab3.mediaplayer.ui.fragments.AlbumsFragment
 import lab3.mediaplayer.ui.fragments.ArtistsFragment
 import lab3.mediaplayer.ui.fragments.SongsFragment

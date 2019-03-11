@@ -15,7 +15,7 @@ import lab3.mediaplayer.media.library.LocalMusicSource
 import lab3.mediaplayer.model.SongItem
 import lab3.mediaplayer.ui.adapters.SongListAdapter
 
-class AlbumSongsActivity: MusicPlayerActivity() {
+class AlbumSongsActivity : MusicPlayerActivity() {
     private lateinit var albumName: String
     private lateinit var songsList: List<SongItem>
     private lateinit var adapter: SongListAdapter

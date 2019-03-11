@@ -13,7 +13,7 @@ import lab3.mediaplayer.model.SongItem
 class SongListAdapter(
     private val dataset: List<SongItem>,
     private val itemListener: (Int) -> Unit
-): RecyclerView.Adapter<SongListAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<SongListAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false))
 
@@ -35,7 +35,7 @@ class SongListAdapter(
         }
     }
 
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val songImage: ImageView by lazy {
             itemView.findViewById<ImageView>(R.id.song_image)
         }

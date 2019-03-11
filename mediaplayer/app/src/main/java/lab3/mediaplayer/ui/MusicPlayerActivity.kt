@@ -104,8 +104,9 @@ abstract class MusicPlayerActivity : AppCompatActivity() {
             }
         }
 
-        bottomSheetBehavior.setBottomSheetCallback(object: BottomSheetBehavior.BottomSheetCallback() {
-            override fun onSlide(p0: View, p1: Float) {/*No need to react to this*/}
+        bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(p0: View, p1: Float) {/*No need to react to this*/
+            }
 
             override fun onStateChanged(p0: View, p1: Int) {
                 if (p1 == BottomSheetBehavior.STATE_COLLAPSED) {

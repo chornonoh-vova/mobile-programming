@@ -9,4 +9,4 @@ data class VideoItem(
     val duration: Int,
     val size: Int,
     val path: String
-): Serializable
+) : Serializable

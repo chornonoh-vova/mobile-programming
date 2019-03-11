@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import lab3.mediaplayer.R
 import lab3.mediaplayer.media.library.BrowseLibrary
 import lab3.mediaplayer.media.library.LocalMusicSource
@@ -15,7 +17,7 @@ import lab3.mediaplayer.ui.AlbumSongsActivity
 import lab3.mediaplayer.ui.MusicLibraryActivity
 import lab3.mediaplayer.ui.adapters.AlbumsListAdapter
 
-class AlbumsFragment: Fragment() {
+class AlbumsFragment : Fragment() {
 
     private lateinit var albumsItemList: List<AlbumItem>
     private lateinit var adapter: AlbumsListAdapter
@@ -25,7 +27,8 @@ class AlbumsFragment: Fragment() {
 
         albumsItemList = LocalMusicSource.getAlbums(activity!!)
 
-        view.findViewById<TextView>(R.id.albums_count).text = activity?.resources?.getQuantityString(R.plurals.album_count, albumsItemList.size, albumsItemList.size)
+        view.findViewById<TextView>(R.id.albums_count).text =
+            activity?.resources?.getQuantityString(R.plurals.album_count, albumsItemList.size, albumsItemList.size)
 
         adapter = AlbumsListAdapter(albumsItemList, itemListener, albumPlayListener)
 
@@ -45,7 +48,10 @@ class AlbumsFragment: Fragment() {
     private val albumPlayListener: (AlbumItem) -> Unit = {
         if (activity != null) {
             (activity as MusicLibraryActivity).playStartIndex = 0
-            (activity as MusicLibraryActivity).mediaBrowser.subscribe(BrowseLibrary.SONGS, (activity as MusicLibraryActivity).browseAlbum(it.name))
+            (activity as MusicLibraryActivity).mediaBrowser.subscribe(
+                BrowseLibrary.SONGS,
+                (activity as MusicLibraryActivity).browseAlbum(it.name)
+            )
         }
     }
 }
