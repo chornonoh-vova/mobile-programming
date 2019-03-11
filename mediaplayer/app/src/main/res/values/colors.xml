@@ -9,4 +9,6 @@
     <color name="primaryTextColor">#ffffff</color>
     <color name="secondaryTextColor">#ffffff</color>
     <color name="notification_bg">#ff424242</color>
+    <color name="playbackControlBackground">#44000000</color>
+    <color name="playerControlText">#cca2a2a2</color>
 </resources>

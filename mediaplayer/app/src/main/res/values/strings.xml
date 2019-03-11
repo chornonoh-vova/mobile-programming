@@ -14,6 +14,9 @@
     <string name="artists_fragment_title">Artists</string>
     <string name="albums_fragment_title">Albums</string>
 
+    <string name="video_size">%.2f MB</string>
+    <string name="video_library_title">Video library</string>
+
     <plurals name="song_count">
         <item quantity="one">%d song</item>
         <item quantity="other">%d songs</item>

@@ -17,5 +17,9 @@ class MainActivity : AppCompatActivity() {
         music_library_button.setOnClickListener {
             MusicLibraryActivity.start(this)
         }
+
+        video_library_button.setOnClickListener {
+            VideoLibraryActivity.start(this)
+        }
     }
 }

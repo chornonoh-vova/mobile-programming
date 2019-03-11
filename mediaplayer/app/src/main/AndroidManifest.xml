@@ -33,6 +33,14 @@
         <activity
             android:name=".ui.AlbumSongsActivity"
             android:parentActivityName=".ui.MusicLibraryActivity"/>
+        <activity
+            android:name=".ui.VideoActivity"
+            android:parentActivityName=".ui.VideoLibraryActivity"
+            android:resizeableActivity="true"
+            android:supportsPictureInPicture="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:launchMode="singleTask"
+            tools:targetApi="n"/>
 
         <!-- Service to play music in background -->
         <service

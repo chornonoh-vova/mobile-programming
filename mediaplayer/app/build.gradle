@@ -56,6 +56,8 @@ dependencies {
     // ExoPlayer
     implementation 'com.google.android.exoplayer:exoplayer-core:2.9.6'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.9.6'
+    // ExoPlayer media session extension
+    implementation 'com.google.android.exoplayer:extension-mediasession:2.9.6'
 
     // testing
     testImplementation 'junit:junit:4.12'
