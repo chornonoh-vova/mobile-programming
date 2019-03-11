@@ -11,6 +11,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_music_library.*
 import lab3.mediaplayer.R
 import lab3.mediaplayer.media.library.BrowseLibrary
+import lab3.mediaplayer.ui.fragments.AlbumsFragment
+import lab3.mediaplayer.ui.fragments.ArtistsFragment
+import lab3.mediaplayer.ui.fragments.SongsFragment
 
 class MusicLibraryActivity : MusicPlayerActivity() {
 
@@ -34,6 +37,10 @@ class MusicLibraryActivity : MusicPlayerActivity() {
     private fun setupViewPager(viewPager: ViewPager) {
         val adapter = ViewPagerAdapter(supportFragmentManager)
 
+        adapter.addFragment(SongsFragment(), getString(R.string.songs_fragment_title))
+        adapter.addFragment(ArtistsFragment(), getString(R.string.artists_fragment_title))
+        adapter.addFragment(AlbumsFragment(), getString(R.string.albums_fragment_title))
+
         viewPager.adapter = adapter
     }
 
@@ -55,7 +62,7 @@ class MusicLibraryActivity : MusicPlayerActivity() {
 
 
     override fun mediaControlsInitialized() {
-        mediaBrowser.subscribe(BrowseLibrary.SONGS, browseCallback)
+//        mediaBrowser.subscribe(BrowseLibrary.SONGS, browseAllSongs)
     }
 
     companion object {

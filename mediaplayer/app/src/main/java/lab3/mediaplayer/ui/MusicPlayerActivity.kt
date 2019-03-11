@@ -23,7 +23,7 @@ abstract class MusicPlayerActivity : AppCompatActivity() {
     protected val bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout> by lazy {
         BottomSheetBehavior.from(bottom_layout)
     }
-    protected lateinit var mediaBrowser: MediaBrowserCompat
+    lateinit var mediaBrowser: MediaBrowserCompat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -187,7 +187,7 @@ abstract class MusicPlayerActivity : AppCompatActivity() {
             time_total.text = getTime(duration)
             song_header.text = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE).toString()
             song_artist.text = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_ARTIST).toString()
-            val albumUri = LocalMusicSource.getBitmapForMedia(
+            val albumUri = LocalMusicSource.getAlbumArtUriForMedia(
                 this,
                 metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID).toString()
             )
@@ -208,10 +208,10 @@ abstract class MusicPlayerActivity : AppCompatActivity() {
     }
 
     // Optional variable to set playlist index to begin from
-    protected var playStartIndex = 0
+    var playStartIndex = 0
 
     // this callback can be called for browsing for music
-    protected var browseCallback = object : MediaBrowserCompat.SubscriptionCallback() {
+    fun browseAllSongs() = object : MediaBrowserCompat.SubscriptionCallback() {
         override fun onChildrenLoaded(parentId: String, children: MutableList<MediaBrowserCompat.MediaItem>) {
             val mediaController = MediaControllerCompat.getMediaController(this@MusicPlayerActivity)
 
@@ -225,6 +225,52 @@ abstract class MusicPlayerActivity : AppCompatActivity() {
             mediaController.transportControls.skipToQueueItem(playStartIndex.toLong())
 
             mediaController.transportControls.prepare()
+
+            mediaController.transportControls.play()
+        }
+    }
+
+    fun browseAlbum(album: String) = object : MediaBrowserCompat.SubscriptionCallback() {
+        override fun onChildrenLoaded(parentId: String, children: MutableList<MediaBrowserCompat.MediaItem>) {
+            val mediaController = MediaControllerCompat.getMediaController(this@MusicPlayerActivity)
+
+            val songsInAlbum = LocalMusicSource.getSongs(this@MusicPlayerActivity).filter {
+                it.album == album
+            }
+
+            mediaController.removeQueueItem(null)
+
+            children.forEach { mi ->
+                if (songsInAlbum.any { it.id == mi.mediaId }) {
+                    mediaController.addQueueItem(mi.description)
+                }
+            }
+
+            mediaController.transportControls.skipToQueueItem(playStartIndex.toLong())
+            mediaController.transportControls.prepare()
+            mediaController.transportControls.play()
+        }
+    }
+
+    fun browseArtist(artist: String) = object : MediaBrowserCompat.SubscriptionCallback() {
+        override fun onChildrenLoaded(parentId: String, children: MutableList<MediaBrowserCompat.MediaItem>) {
+            val mediaController = MediaControllerCompat.getMediaController(this@MusicPlayerActivity)
+
+            val songsForArtist = LocalMusicSource.getSongs(this@MusicPlayerActivity).filter {
+                it.artist == artist
+            }
+
+            mediaController.removeQueueItem(null)
+
+            children.forEach { mi ->
+                if (songsForArtist.any { it.id == mi.mediaId }) {
+                    mediaController.addQueueItem(mi.description)
+                }
+            }
+
+            mediaController.transportControls.skipToQueueItem(playStartIndex.toLong())
+            mediaController.transportControls.prepare()
+            mediaController.transportControls.play()
         }
     }
 

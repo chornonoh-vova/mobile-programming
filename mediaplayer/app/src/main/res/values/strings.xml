@@ -9,4 +9,18 @@
     <string name="notification_skip_to_next">Skip to next</string>
     <string name="notification_channel">Music player</string>
     <string name="notification_channel_description">Music player for media playback service</string>
+    <string name="songs_fragment_title">Songs</string>
+    <string name="my_videos_button">My videos</string>
+    <string name="artists_fragment_title">Artists</string>
+    <string name="albums_fragment_title">Albums</string>
+
+    <plurals name="song_count">
+        <item quantity="one">%d song</item>
+        <item quantity="other">%d songs</item>
+    </plurals>
+
+    <plurals name="album_count">
+        <item quantity="one">%d album</item>
+        <item quantity="other">%d albums</item>
+    </plurals>
 </resources>

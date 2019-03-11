@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="wrap_content"
+
+                                                   android:clickable="true"
+                                                   android:focusable="true"
+                                                   android:background="?attr/selectableItemBackground">
+
+    <ImageView
+        android:layout_width="108dp"
+        android:layout_height="108dp"
+        app:srcCompat="@drawable/ic_music_video_black_24dp"
+        android:id="@+id/album_image"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="8dp"/>
+
+    <ImageButton
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        app:srcCompat="@drawable/ic_play_arrow_black_24dp"
+        android:id="@+id/play_album_button"
+        android:background="@drawable/circle_button"
+        app:layout_constraintEnd_toEndOf="@+id/album_image"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/album_image"
+        android:elevation="2dp"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/album_name"
+        app:layout_constraintStart_toStartOf="@+id/album_image"
+        app:layout_constraintEnd_toEndOf="@+id/album_image"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:ellipsize="end"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/album_image"
+        android:singleLine="true"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
