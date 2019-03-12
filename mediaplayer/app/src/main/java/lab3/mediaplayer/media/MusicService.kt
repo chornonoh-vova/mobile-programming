@@ -144,13 +144,13 @@ class MusicService : MediaBrowserServiceCompat() {
             if (mediaController.playbackState.isStopped) {
                 onPrepare()
             }
+            mediaSession.setMetadata(playlist[currentPlayingIndex].toMetadata())
 //            startService(Intent(applicationContext, this@MusicService.javaClass))
             mediaSession.setPlaybackState(
                 stateBuilder
                     .setState(PlaybackStateCompat.STATE_PLAYING, playerAdapter.getPosition(), 1.0f)
                     .build()
             )
-            mediaSession.setMetadata(playlist[currentPlayingIndex].toMetadata())
             playerAdapter.setVolume(1.0f)
             playerAdapter.play()
         }
