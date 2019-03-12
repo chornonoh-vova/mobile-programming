@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Camera2You</string>
+    <string name="picture">Picture</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="permission_request">This sample needs permission for camera and audio recording.</string>
+    <string name="request_permission">This sample needs camera permission.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="fragment_video_title">Video</string>
+    <string name="fragment_photo_title">Photo</string>
+</resources>
