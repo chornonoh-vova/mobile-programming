@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.source.ExtractorMediaSource
@@ -38,6 +39,13 @@ class VideoPlayerHolder(
         playerView.player = it
     }
 
+    private val screenDimListener = object : Player.EventListener {
+        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+            playerView.keepScreenOn =
+                !(playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED || !playWhenReady)
+        }
+    }
+
     private val dataSourceFactory = DefaultDataSourceFactory(
         context,
         Util.getUserAgent(
@@ -50,6 +58,8 @@ class VideoPlayerHolder(
         val mediaSource = ExtractorMediaSource.Factory(dataSourceFactory)
             .createMediaSource(Uri.fromFile(File(video.path)))
         player.prepare(mediaSource)
+
+        player.addListener(screenDimListener)
     }
 
     fun start(video: VideoItem) {
