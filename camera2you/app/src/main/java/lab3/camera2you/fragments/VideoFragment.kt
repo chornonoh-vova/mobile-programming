@@ -14,6 +14,7 @@ import android.hardware.camera2.CameraDevice.TEMPLATE_PREVIEW
 import android.hardware.camera2.CameraDevice.TEMPLATE_RECORD
 import android.media.MediaRecorder
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
@@ -21,6 +22,7 @@ import android.util.Size
 import android.util.SparseIntArray
 import android.view.*
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.appcompat.app.AlertDialog
@@ -31,6 +33,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import lab3.camera2you.AutoFitTextureView
 import lab3.camera2you.CompareSizesByArea
+import lab3.camera2you.MainActivity
 import lab3.camera2you.R
 import lab3.camera2you.dialogs.ConfirmationDialog
 import lab3.camera2you.dialogs.ErrorDialog
@@ -39,23 +42,8 @@ import java.util.*
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
-class VideoFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
-    private val FRAGMENT_DIALOG = "dialog"
-    private val TAG = "Camera2VideoFragment"
-    private val SENSOR_ORIENTATION_DEFAULT_DEGREES = 90
-    private val SENSOR_ORIENTATION_INVERSE_DEGREES = 270
-    private val DEFAULT_ORIENTATIONS = SparseIntArray().apply {
-        append(Surface.ROTATION_0, 90)
-        append(Surface.ROTATION_90, 0)
-        append(Surface.ROTATION_180, 270)
-        append(Surface.ROTATION_270, 180)
-    }
-    private val INVERSE_ORIENTATIONS = SparseIntArray().apply {
-        append(Surface.ROTATION_0, 270)
-        append(Surface.ROTATION_90, 180)
-        append(Surface.ROTATION_180, 90)
-        append(Surface.ROTATION_270, 0)
-    }
+class VideoFragment : Fragment(), View.OnClickListener,
+    ActivityCompat.OnRequestPermissionsResultCallback {
 
     /**
      * [TextureView.SurfaceTextureListener] handles several lifecycle events on a
@@ -85,7 +73,7 @@ class VideoFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequest
     /**
      * Button to record video
      */
-    private lateinit var videoButton: Button
+    private lateinit var videoButton: ImageButton
 
     /**
      * A reference to the opened [android.hardware.camera2.CameraDevice].
@@ -180,9 +168,10 @@ class VideoFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequest
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         textureView = view.findViewById(R.id.texture)
-        videoButton = view.findViewById<Button>(R.id.video).also {
+        videoButton = view.findViewById<ImageButton>(R.id.video).also {
             it.setOnClickListener(this)
         }
+        view.findViewById<View>(R.id.next).setOnClickListener(this)
     }
 
     override fun onResume() {
@@ -209,6 +198,7 @@ class VideoFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequest
     override fun onClick(view: View) {
         when (view.id) {
             R.id.video -> if (isRecordingVideo) stopRecordingVideo() else startRecordingVideo()
+            R.id.next -> (activity as MainActivity).showPhotoFragment()
         }
     }
 
@@ -455,7 +445,7 @@ class VideoFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequest
         val cameraActivity = activity ?: return
 
         if (nextVideoAbsolutePath.isNullOrEmpty()) {
-            nextVideoAbsolutePath = getVideoFilePath(cameraActivity)
+            nextVideoAbsolutePath = getFileName("V", ".mp4")
         }
 
         val rotation = cameraActivity.windowManager.defaultDisplay.rotation
@@ -480,15 +470,9 @@ class VideoFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequest
         }
     }
 
-    private fun getVideoFilePath(context: Context?): String {
-        val filename = "${System.currentTimeMillis()}.mp4"
-        val dir = context?.getExternalFilesDir(null)
-
-        return if (dir == null) {
-            filename
-        } else {
-            "${dir.absolutePath}/$filename"
-        }
+    fun getFileName(suffix: String, ext: String): String {
+        val date = Calendar.getInstance()
+        return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)}/$suffix${date.get(Calendar.DAY_OF_MONTH)}${date.get(Calendar.MONTH)}${date.get(Calendar.YEAR)}-${date.get(Calendar.HOUR_OF_DAY)}${date.get(Calendar.MINUTE)}${date.get(Calendar.SECOND)}$ext"
     }
 
     private fun startRecordingVideo() {
@@ -522,7 +506,7 @@ class VideoFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequest
                         captureSession = cameraCaptureSession
                         updatePreview()
                         activity?.runOnUiThread {
-                            videoButton.setText(R.string.stop)
+                            videoButton.setImageResource(R.drawable.ic_stop_black_24dp)
                             isRecordingVideo = true
                             mediaRecorder?.start()
                         }
@@ -542,13 +526,25 @@ class VideoFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequest
     }
 
     private fun closePreviewSession() {
-        captureSession?.close()
-        captureSession = null
+        if (captureSession != null) {
+            captureSession?.close()
+            captureSession = null
+        }
     }
 
     private fun stopRecordingVideo() {
         isRecordingVideo = false
-        videoButton.setText(R.string.record)
+        videoButton.setImageResource(R.drawable.ic_videocam_black_24dp)
+
+        try {
+            captureSession?.apply {
+                stopRepeating()
+                abortCaptures()
+            }
+        } catch (e: CameraAccessException) {
+            e.printStackTrace()
+        }
+
         mediaRecorder?.apply {
             stop()
             reset()
@@ -572,40 +568,59 @@ class VideoFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequest
         it.width == it.height * 4 / 3 && it.width <= 1080
     } ?: choices[choices.size - 1]
 
-    /**
-     * Given [choices] of [Size]s supported by a camera, chooses the smallest one whose
-     * width and height are at least as large as the respective requested values, and whose aspect
-     * ratio matches with the specified value.
-     *
-     * @param choices     The list of sizes that the camera supports for the intended output class
-     * @param width       The minimum desired width
-     * @param height      The minimum desired height
-     * @param aspectRatio The aspect ratio
-     * @return The optimal [Size], or an arbitrary one if none were big enough
-     */
-    private fun chooseOptimalSize(
-        choices: Array<Size>,
-        width: Int,
-        height: Int,
-        aspectRatio: Size
-    ): Size {
-
-        // Collect the supported resolutions that are at least as big as the preview Surface
-        val w = aspectRatio.width
-        val h = aspectRatio.height
-        val bigEnough = choices.filter {
-            it.height == it.width * h / w && it.width >= width && it.height >= height
-        }
-
-        // Pick the smallest of those, assuming we found any
-        return if (bigEnough.isNotEmpty()) {
-            Collections.min(bigEnough, CompareSizesByArea())
-        } else {
-            choices[0]
-        }
-    }
 
     companion object {
+        private const val FRAGMENT_DIALOG = "dialog"
+        private const val TAG = "VideoFragment"
+        private const val SENSOR_ORIENTATION_DEFAULT_DEGREES = 90
+        private const val SENSOR_ORIENTATION_INVERSE_DEGREES = 270
+        private val DEFAULT_ORIENTATIONS = SparseIntArray().apply {
+            append(Surface.ROTATION_0, 90)
+            append(Surface.ROTATION_90, 0)
+            append(Surface.ROTATION_180, 270)
+            append(Surface.ROTATION_270, 180)
+        }
+        private val INVERSE_ORIENTATIONS = SparseIntArray().apply {
+            append(Surface.ROTATION_0, 270)
+            append(Surface.ROTATION_90, 180)
+            append(Surface.ROTATION_180, 90)
+            append(Surface.ROTATION_270, 0)
+        }
+
+        /**
+         * Given [choices] of [Size]s supported by a camera, chooses the smallest one whose
+         * width and height are at least as large as the respective requested values, and whose aspect
+         * ratio matches with the specified value.
+         *
+         * @param choices     The list of sizes that the camera supports for the intended output class
+         * @param width       The minimum desired width
+         * @param height      The minimum desired height
+         * @param aspectRatio The aspect ratio
+         * @return The optimal [Size], or an arbitrary one if none were big enough
+         */
+        @JvmStatic
+        private fun chooseOptimalSize(
+            choices: Array<Size>,
+            width: Int,
+            height: Int,
+            aspectRatio: Size
+        ): Size {
+
+            // Collect the supported resolutions that are at least as big as the preview Surface
+            val w = aspectRatio.width
+            val h = aspectRatio.height
+            val bigEnough = choices.filter {
+                it.height == it.width * h / w && it.width >= width && it.height >= height
+            }
+
+            // Pick the smallest of those, assuming we found any
+            return if (bigEnough.isNotEmpty()) {
+                Collections.min(bigEnough, CompareSizesByArea())
+            } else {
+                choices[0]
+            }
+        }
+
         fun newInstance(): VideoFragment = VideoFragment()
     }
 

@@ -8,6 +8,7 @@ import android.graphics.*
 import android.hardware.camera2.*
 import android.media.ImageReader
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
@@ -230,12 +231,18 @@ class PhotoFragment : Fragment(), View.OnClickListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         view.findViewById<View>(R.id.picture).setOnClickListener(this)
+        view.findViewById<View>(R.id.next).setOnClickListener(this)
         textureView = view.findViewById(R.id.texture)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        file = File(activity?.getExternalFilesDir(null), System.currentTimeMillis().toString() + ".jpg")
+        file = File(getFileName("P",".jpg"))
+    }
+
+    fun getFileName(suffix: String, ext: String): String {
+        val date = Calendar.getInstance()
+        return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)}/$suffix${date.get(Calendar.DAY_OF_MONTH)}${date.get(Calendar.MONTH)}${date.get(Calendar.YEAR)}-${date.get(Calendar.HOUR_OF_DAY)}${date.get(Calendar.MINUTE)}${date.get(Calendar.SECOND)}$ext"
     }
 
     override fun onResume() {
@@ -699,6 +706,7 @@ class PhotoFragment : Fragment(), View.OnClickListener,
     override fun onClick(view: View) {
         when (view.id) {
             R.id.picture -> lockFocus()
+            R.id.next -> (activity as MainActivity).showVideoFragment()
         }
     }
 
@@ -716,55 +724,55 @@ class PhotoFragment : Fragment(), View.OnClickListener,
         /**
          * Conversion from screen rotation to JPEG orientation.
          */
-        private val ORIENTATIONS = SparseIntArray()
-        private val FRAGMENT_DIALOG = "dialog"
 
-        init {
-            ORIENTATIONS.append(Surface.ROTATION_0, 90)
-            ORIENTATIONS.append(Surface.ROTATION_90, 0)
-            ORIENTATIONS.append(Surface.ROTATION_180, 270)
-            ORIENTATIONS.append(Surface.ROTATION_270, 180)
+        private const val FRAGMENT_DIALOG = "dialog"
+
+        private val ORIENTATIONS = SparseIntArray().apply {
+            append(Surface.ROTATION_0, 90)
+            append(Surface.ROTATION_90, 0)
+            append(Surface.ROTATION_180, 270)
+            append(Surface.ROTATION_270, 180)
         }
 
         /**
          * Tag for the [Log].
          */
-        private val TAG = "PhotoFragment"
+        private const val TAG = "PhotoFragment"
 
         /**
          * Camera state: Showing camera preview.
          */
-        private val STATE_PREVIEW = 0
+        private const val STATE_PREVIEW = 0
 
         /**
          * Camera state: Waiting for the focus to be locked.
          */
-        private val STATE_WAITING_LOCK = 1
+        private const val STATE_WAITING_LOCK = 1
 
         /**
          * Camera state: Waiting for the exposure to be precapture state.
          */
-        private val STATE_WAITING_PRECAPTURE = 2
+        private const val STATE_WAITING_PRECAPTURE = 2
 
         /**
          * Camera state: Waiting for the exposure state to be something other than precapture.
          */
-        private val STATE_WAITING_NON_PRECAPTURE = 3
+        private const val STATE_WAITING_NON_PRECAPTURE = 3
 
         /**
          * Camera state: Picture was taken.
          */
-        private val STATE_PICTURE_TAKEN = 4
+        private const val STATE_PICTURE_TAKEN = 4
 
         /**
          * Max preview width that is guaranteed by Camera2 API
          */
-        private val MAX_PREVIEW_WIDTH = 1920
+        private const val MAX_PREVIEW_WIDTH = 1920
 
         /**
          * Max preview height that is guaranteed by Camera2 API
          */
-        private val MAX_PREVIEW_HEIGHT = 1080
+        private const val MAX_PREVIEW_HEIGHT = 1080
 
         /**
          * Given `choices` of `Size`s supported by a camera, choose the smallest one that

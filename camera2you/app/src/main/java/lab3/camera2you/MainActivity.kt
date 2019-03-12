@@ -17,14 +17,47 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (supportFragmentManager.findFragmentByTag(PhotoFragment::class.java.name) == null) {
+        if (supportFragmentManager.findFragmentByTag(PhotoFragment::class.java.name) != null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, PhotoFragment.newInstance(), PhotoFragment::class.java.name)
+                .replace(
+                    R.id.container,
+                    supportFragmentManager.findFragmentByTag(PhotoFragment::class.java.name)!!,
+                    PhotoFragment::class.java.name
+                )
+                .commit()
+
+        } else if (supportFragmentManager.findFragmentByTag(VideoFragment::class.java.name) != null) {
+            supportFragmentManager.beginTransaction()
+                .replace(
+                    R.id.container,
+                    supportFragmentManager.findFragmentByTag(VideoFragment::class.java.name)!!,
+                    VideoFragment::class.java.name
+                )
                 .commit()
         } else {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, supportFragmentManager.findFragmentByTag(PhotoFragment::class.java.name)!!, PhotoFragment::class.java.name)
+                .replace(R.id.container, PhotoFragment.newInstance(), PhotoFragment::class.java.name)
                 .commit()
         }
+    }
+
+    fun showVideoFragment() {
+        supportFragmentManager.beginTransaction()
+            .remove(supportFragmentManager.findFragmentByTag(PhotoFragment::class.java.name)!!)
+            .commitNow()
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, VideoFragment.newInstance(), VideoFragment::class.java.name)
+            .commit()
+    }
+
+    fun showPhotoFragment() {
+        supportFragmentManager.beginTransaction()
+            .remove(supportFragmentManager.findFragmentByTag(VideoFragment::class.java.name)!!)
+            .commitNow()
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, PhotoFragment.newInstance(), PhotoFragment::class.java.name)
+            .commit()
     }
 }
