@@ -8,104 +8,25 @@ import android.graphics.*
 import android.hardware.camera2.*
 import android.media.ImageReader
 import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
-import android.os.HandlerThread
 import android.util.Log
-import android.util.Size
 import android.util.SparseIntArray
 import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import lab3.camera2you.*
 import lab3.camera2you.dialogs.ConfirmationDialog
 import lab3.camera2you.dialogs.ErrorDialog
 import java.io.File
 import java.util.*
-import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
-class PhotoFragment : Fragment(), View.OnClickListener,
+class PhotoFragment : BaseCameraFragment(), View.OnClickListener,
     ActivityCompat.OnRequestPermissionsResultCallback {
-    /**
-     * [TextureView.SurfaceTextureListener] handles several lifecycle events on a
-     * [TextureView].
-     */
-    private val surfaceTextureListener = object : TextureView.SurfaceTextureListener {
-
-        override fun onSurfaceTextureAvailable(texture: SurfaceTexture, width: Int, height: Int) {
-            openCamera(width, height)
-        }
-
-        override fun onSurfaceTextureSizeChanged(texture: SurfaceTexture, width: Int, height: Int) {
-            configureTransform(width, height)
-        }
-
-        override fun onSurfaceTextureDestroyed(texture: SurfaceTexture) = true
-
-        override fun onSurfaceTextureUpdated(texture: SurfaceTexture) = Unit
-
-    }
 
     /**
      * ID of the current [CameraDevice].
      */
     private lateinit var cameraId: String
-
-    /**
-     * An [AutoFitTextureView] for camera preview.
-     */
-    private lateinit var textureView: AutoFitTextureView
-
-    /**
-     * A [CameraCaptureSession] for camera preview.
-     */
-    private var captureSession: CameraCaptureSession? = null
-
-    /**
-     * A reference to the opened [CameraDevice].
-     */
-    private var cameraDevice: CameraDevice? = null
-
-    /**
-     * The [android.util.Size] of camera preview.
-     */
-    private lateinit var previewSize: Size
-
-    /**
-     * [CameraDevice.StateCallback] is called when [CameraDevice] changes its state.
-     */
-    private val stateCallback = object : CameraDevice.StateCallback() {
-
-        override fun onOpened(cameraDevice: CameraDevice) {
-            cameraOpenCloseLock.release()
-            this@PhotoFragment.cameraDevice = cameraDevice
-            createCameraPreviewSession()
-        }
-
-        override fun onDisconnected(cameraDevice: CameraDevice) {
-            cameraOpenCloseLock.release()
-            cameraDevice.close()
-            this@PhotoFragment.cameraDevice = null
-        }
-
-        override fun onError(cameraDevice: CameraDevice, error: Int) {
-            onDisconnected(cameraDevice)
-            this@PhotoFragment.activity?.finish()
-        }
-
-    }
-
-    /**
-     * An additional thread for running tasks that shouldn't block the UI.
-     */
-    private var backgroundThread: HandlerThread? = null
-
-    /**
-     * A [Handler] for running tasks in the background.
-     */
-    private var backgroundHandler: Handler? = null
 
     /**
      * An [ImageReader] that handles still image capture.
@@ -143,19 +64,9 @@ class PhotoFragment : Fragment(), View.OnClickListener,
     private var state = STATE_PREVIEW
 
     /**
-     * A [Semaphore] to prevent the app from exiting before closing the camera.
-     */
-    private val cameraOpenCloseLock = Semaphore(1)
-
-    /**
      * Whether the current camera device supports Flash or not.
      */
     private var flashSupported = false
-
-    /**
-     * Orientation of the camera sensor
-     */
-    private var sensorOrientation = 0
 
     /**
      * A [CameraCaptureSession.CaptureCallback] that handles events related to JPEG capture.
@@ -240,32 +151,6 @@ class PhotoFragment : Fragment(), View.OnClickListener,
         file = File(getFileName("P",".jpg"))
     }
 
-    fun getFileName(suffix: String, ext: String): String {
-        val date = Calendar.getInstance()
-        return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)}/$suffix${date.get(Calendar.DAY_OF_MONTH)}${date.get(Calendar.MONTH)}${date.get(Calendar.YEAR)}-${date.get(Calendar.HOUR_OF_DAY)}${date.get(Calendar.MINUTE)}${date.get(Calendar.SECOND)}$ext"
-    }
-
-    override fun onResume() {
-        super.onResume()
-        startBackgroundThread()
-
-        // When the screen is turned off and turned back on, the SurfaceTexture is already
-        // available, and "onSurfaceTextureAvailable" will not be called. In that case, we can open
-        // a camera and start preview from here (otherwise, we wait until the surface is ready in
-        // the SurfaceTextureListener).
-        if (textureView.isAvailable) {
-            openCamera(textureView.width, textureView.height)
-        } else {
-            textureView.surfaceTextureListener = surfaceTextureListener
-        }
-    }
-
-    override fun onPause() {
-        closeCamera()
-        stopBackgroundThread()
-        super.onPause()
-    }
-
     private fun requestCameraPermission() {
         if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
             ConfirmationDialog().show(
@@ -277,6 +162,8 @@ class PhotoFragment : Fragment(), View.OnClickListener,
         }
     }
 
+    override fun onCameraOpened(cameraDevice: CameraDevice) = createCameraPreviewSession()
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -284,7 +171,7 @@ class PhotoFragment : Fragment(), View.OnClickListener,
     ) {
         if (requestCode == 1) {
             if (grantResults.size != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                ErrorDialog.newInstance(getString(R.string.request_permission))
+                ErrorDialog.newInstance(getString(R.string.camera_request_permission))
                     .show(childFragmentManager, FRAGMENT_DIALOG)
             }
         } else {
@@ -413,9 +300,9 @@ class PhotoFragment : Fragment(), View.OnClickListener,
     }
 
     /**
-     * Opens the camera specified by [Camera2BasicFragment.cameraId].
+     * Opens the camera specified by [PhotoFragment.cameraId].
      */
-    private fun openCamera(width: Int, height: Int) {
+    override fun openCamera(width: Int, height: Int) {
         val permission = ContextCompat.checkSelfPermission(activity!!, Manifest.permission.CAMERA)
         if (permission != PackageManager.PERMISSION_GRANTED) {
             requestCameraPermission()
@@ -441,7 +328,7 @@ class PhotoFragment : Fragment(), View.OnClickListener,
     /**
      * Closes the current [CameraDevice].
      */
-    private fun closeCamera() {
+    override fun closeCamera() {
         try {
             cameraOpenCloseLock.acquire()
             captureSession?.close()
@@ -455,29 +342,6 @@ class PhotoFragment : Fragment(), View.OnClickListener,
         } finally {
             cameraOpenCloseLock.release()
         }
-    }
-
-    /**
-     * Starts a background thread and its [Handler].
-     */
-    private fun startBackgroundThread() {
-        backgroundThread = HandlerThread("CameraBackground").also { it.start() }
-        backgroundHandler = Handler(backgroundThread?.looper)
-    }
-
-    /**
-     * Stops the background thread and its [Handler].
-     */
-    private fun stopBackgroundThread() {
-        backgroundThread?.quitSafely()
-        try {
-            backgroundThread?.join()
-            backgroundThread = null
-            backgroundHandler = null
-        } catch (e: InterruptedException) {
-            Log.e(TAG, e.toString())
-        }
-
     }
 
     /**
@@ -539,40 +403,6 @@ class PhotoFragment : Fragment(), View.OnClickListener,
             Log.e(TAG, e.toString())
         }
 
-    }
-
-    /**
-     * Configures the necessary [android.graphics.Matrix] transformation to `textureView`.
-     * This method should be called after the camera preview size is determined in
-     * setUpCameraOutputs and also the size of `textureView` is fixed.
-     *
-     * @param viewWidth  The width of `textureView`
-     * @param viewHeight The height of `textureView`
-     */
-    private fun configureTransform(viewWidth: Int, viewHeight: Int) {
-        activity ?: return
-        val rotation = activity!!.windowManager.defaultDisplay.rotation
-        val matrix = Matrix()
-        val viewRect = RectF(0f, 0f, viewWidth.toFloat(), viewHeight.toFloat())
-        val bufferRect = RectF(0f, 0f, previewSize.height.toFloat(), previewSize.width.toFloat())
-        val centerX = viewRect.centerX()
-        val centerY = viewRect.centerY()
-
-        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
-            bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY())
-            val scale = Math.max(
-                viewHeight.toFloat() / previewSize.height,
-                viewWidth.toFloat() / previewSize.width
-            )
-            with(matrix) {
-                setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL)
-                postScale(scale, scale, centerX, centerY)
-                postRotate((90 * (rotation - 2)).toFloat(), centerX, centerY)
-            }
-        } else if (Surface.ROTATION_180 == rotation) {
-            matrix.postRotate(180f, centerX, centerY)
-        }
-        textureView.setTransform(matrix)
     }
 
     /**
@@ -660,6 +490,7 @@ class PhotoFragment : Fragment(), View.OnClickListener,
                 ) {
                     activity?.showToast("Saved: $file")
                     Log.d(TAG, file.toString())
+                    file = File(getFileName("P",".jpg"))
                     unlockFocus()
                 }
             }
@@ -735,11 +566,6 @@ class PhotoFragment : Fragment(), View.OnClickListener,
         }
 
         /**
-         * Tag for the [Log].
-         */
-        private const val TAG = "PhotoFragment"
-
-        /**
          * Camera state: Showing camera preview.
          */
         private const val STATE_PREVIEW = 0
@@ -773,65 +599,5 @@ class PhotoFragment : Fragment(), View.OnClickListener,
          * Max preview height that is guaranteed by Camera2 API
          */
         private const val MAX_PREVIEW_HEIGHT = 1080
-
-        /**
-         * Given `choices` of `Size`s supported by a camera, choose the smallest one that
-         * is at least as large as the respective texture view size, and that is at most as large as
-         * the respective max size, and whose aspect ratio matches with the specified value. If such
-         * size doesn't exist, choose the largest one that is at most as large as the respective max
-         * size, and whose aspect ratio matches with the specified value.
-         *
-         * @param choices           The list of sizes that the camera supports for the intended
-         *                          output class
-         * @param textureViewWidth  The width of the texture view relative to sensor coordinate
-         * @param textureViewHeight The height of the texture view relative to sensor coordinate
-         * @param maxWidth          The maximum width that can be chosen
-         * @param maxHeight         The maximum height that can be chosen
-         * @param aspectRatio       The aspect ratio
-         * @return The optimal `Size`, or an arbitrary one if none were big enough
-         */
-        @JvmStatic
-        private fun chooseOptimalSize(
-            choices: Array<Size>,
-            textureViewWidth: Int,
-            textureViewHeight: Int,
-            maxWidth: Int,
-            maxHeight: Int,
-            aspectRatio: Size
-        ): Size {
-
-            // Collect the supported resolutions that are at least as big as the preview Surface
-            val bigEnough = ArrayList<Size>()
-            // Collect the supported resolutions that are smaller than the preview Surface
-            val notBigEnough = ArrayList<Size>()
-            val w = aspectRatio.width
-            val h = aspectRatio.height
-            for (option in choices) {
-                if (option.width <= maxWidth && option.height <= maxHeight &&
-                    option.height == option.width * h / w
-                ) {
-                    if (option.width >= textureViewWidth && option.height >= textureViewHeight) {
-                        bigEnough.add(option)
-                    } else {
-                        notBigEnough.add(option)
-                    }
-                }
-            }
-
-            // Pick the smallest of those big enough. If there is no one big enough, pick the
-            // largest of those not big enough.
-            if (bigEnough.size > 0) {
-                return Collections.min(bigEnough, CompareSizesByArea())
-            } else if (notBigEnough.size > 0) {
-                return Collections.max(notBigEnough, CompareSizesByArea())
-            } else {
-                Log.e(TAG, "Couldn't find any suitable preview size")
-                return choices[0]
-            }
-        }
-
-        @JvmStatic
-        fun newInstance(): PhotoFragment =
-            PhotoFragment()
     }
 }

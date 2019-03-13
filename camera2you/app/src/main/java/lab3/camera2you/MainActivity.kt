@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         } else {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, PhotoFragment.newInstance(), PhotoFragment::class.java.name)
+                .replace(R.id.container, PhotoFragment(), PhotoFragment::class.java.name)
                 .commit()
         }
     }
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             .commitNow()
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, VideoFragment.newInstance(), VideoFragment::class.java.name)
+            .replace(R.id.container, VideoFragment(), VideoFragment::class.java.name)
             .commit()
     }
 
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             .commitNow()
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, PhotoFragment.newInstance(), PhotoFragment::class.java.name)
+            .replace(R.id.container, PhotoFragment(), PhotoFragment::class.java.name)
             .commit()
     }
 }

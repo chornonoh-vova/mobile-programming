@@ -11,7 +11,7 @@ class ConfirmationDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         AlertDialog.Builder(activity!!)
-            .setMessage(R.string.permission_request)
+            .setMessage(R.string.camera_audio_permission_request)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 parentFragment?.requestPermissions(
                     arrayOf(

@@ -4,8 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.Matrix
-import android.graphics.RectF
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.*
 import android.hardware.camera2.CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP
@@ -14,82 +12,30 @@ import android.hardware.camera2.CameraDevice.TEMPLATE_PREVIEW
 import android.hardware.camera2.CameraDevice.TEMPLATE_RECORD
 import android.media.MediaRecorder
 import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
 import android.util.Size
 import android.util.SparseIntArray
 import android.view.*
-import android.widget.Button
 import android.widget.ImageButton
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import lab3.camera2you.AutoFitTextureView
-import lab3.camera2you.CompareSizesByArea
-import lab3.camera2you.MainActivity
-import lab3.camera2you.R
+import lab3.camera2you.*
 import lab3.camera2you.dialogs.ConfirmationDialog
 import lab3.camera2you.dialogs.ErrorDialog
 import java.io.IOException
 import java.util.*
-import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
-class VideoFragment : Fragment(), View.OnClickListener,
+class VideoFragment : BaseCameraFragment(), View.OnClickListener,
     ActivityCompat.OnRequestPermissionsResultCallback {
-
-    /**
-     * [TextureView.SurfaceTextureListener] handles several lifecycle events on a
-     * [TextureView].
-     */
-    private val surfaceTextureListener = object : TextureView.SurfaceTextureListener {
-
-        override fun onSurfaceTextureAvailable(texture: SurfaceTexture, width: Int, height: Int) {
-            openCamera(width, height)
-        }
-
-        override fun onSurfaceTextureSizeChanged(texture: SurfaceTexture, width: Int, height: Int) {
-            configureTransform(width, height)
-        }
-
-        override fun onSurfaceTextureDestroyed(surfaceTexture: SurfaceTexture) = true
-
-        override fun onSurfaceTextureUpdated(surfaceTexture: SurfaceTexture) = Unit
-
-    }
-
-    /**
-     * An [AutoFitTextureView] for camera preview.
-     */
-    private lateinit var textureView: AutoFitTextureView
 
     /**
      * Button to record video
      */
     private lateinit var videoButton: ImageButton
-
-    /**
-     * A reference to the opened [android.hardware.camera2.CameraDevice].
-     */
-    private var cameraDevice: CameraDevice? = null
-
-    /**
-     * A reference to the current [android.hardware.camera2.CameraCaptureSession] for
-     * preview.
-     */
-    private var captureSession: CameraCaptureSession? = null
-
-    /**
-     * The [android.util.Size] of camera preview.
-     */
-    private lateinit var previewSize: Size
 
     /**
      * The [android.util.Size] of video recording.
@@ -102,56 +48,9 @@ class VideoFragment : Fragment(), View.OnClickListener,
     private var isRecordingVideo = false
 
     /**
-     * An additional thread for running tasks that shouldn't block the UI.
-     */
-    private var backgroundThread: HandlerThread? = null
-
-    /**
-     * A [Handler] for running tasks in the background.
-     */
-    private var backgroundHandler: Handler? = null
-
-    /**
-     * A [Semaphore] to prevent the app from exiting before closing the camera.
-     */
-    private val cameraOpenCloseLock = Semaphore(1)
-
-    /**
      * [CaptureRequest.Builder] for the camera preview
      */
     private lateinit var previewRequestBuilder: CaptureRequest.Builder
-
-    /**
-     * Orientation of the camera sensor
-     */
-    private var sensorOrientation = 0
-
-    /**
-     * [CameraDevice.StateCallback] is called when [CameraDevice] changes its status.
-     */
-    private val stateCallback = object : CameraDevice.StateCallback() {
-
-        override fun onOpened(cameraDevice: CameraDevice) {
-            cameraOpenCloseLock.release()
-            this@VideoFragment.cameraDevice = cameraDevice
-            startPreview()
-            configureTransform(textureView.width, textureView.height)
-        }
-
-        override fun onDisconnected(cameraDevice: CameraDevice) {
-            cameraOpenCloseLock.release()
-            cameraDevice.close()
-            this@VideoFragment.cameraDevice = null
-        }
-
-        override fun onError(cameraDevice: CameraDevice, error: Int) {
-            cameraOpenCloseLock.release()
-            cameraDevice.close()
-            this@VideoFragment.cameraDevice = null
-            activity?.finish()
-        }
-
-    }
 
     /**
      * Output file for video
@@ -174,27 +73,6 @@ class VideoFragment : Fragment(), View.OnClickListener,
         view.findViewById<View>(R.id.next).setOnClickListener(this)
     }
 
-    override fun onResume() {
-        super.onResume()
-        startBackgroundThread()
-
-        // When the screen is turned off and turned back on, the SurfaceTexture is already
-        // available, and "onSurfaceTextureAvailable" will not be called. In that case, we can open
-        // a camera and start preview from here (otherwise, we wait until the surface is ready in
-        // the SurfaceTextureListener).
-        if (textureView.isAvailable) {
-            openCamera(textureView.width, textureView.height)
-        } else {
-            textureView.surfaceTextureListener = surfaceTextureListener
-        }
-    }
-
-    override fun onPause() {
-        closeCamera()
-        stopBackgroundThread()
-        super.onPause()
-    }
-
     override fun onClick(view: View) {
         when (view.id) {
             R.id.video -> if (isRecordingVideo) stopRecordingVideo() else startRecordingVideo()
@@ -202,37 +80,10 @@ class VideoFragment : Fragment(), View.OnClickListener,
         }
     }
 
-    /**
-     * Starts a background thread and its [Handler].
-     */
-    private fun startBackgroundThread() {
-        backgroundThread = HandlerThread("CameraBackground")
-        backgroundThread?.start()
-        backgroundHandler = Handler(backgroundThread?.looper)
+    override fun onCameraOpened(cameraDevice: CameraDevice) {
+        startPreview()
+        configureTransform(textureView.width, textureView.height)
     }
-
-    /**
-     * Stops the background thread and its [Handler].
-     */
-    private fun stopBackgroundThread() {
-        backgroundThread?.quitSafely()
-        try {
-            backgroundThread?.join()
-            backgroundThread = null
-            backgroundHandler = null
-        } catch (e: InterruptedException) {
-            Log.e(TAG, e.toString())
-        }
-    }
-
-    /**
-     * Gets whether you should show UI with rationale for requesting permissions.
-     *
-     * @param permissions The permissions your app wants to request.
-     * @return Whether you can show permission rationale UI.
-     */
-    private fun shouldShowRequestPermissionRationale(permissions: Array<String>) =
-        permissions.any { shouldShowRequestPermissionRationale(it) }
 
     /**
      * Requests permissions needed for recording video.
@@ -260,13 +111,13 @@ class VideoFragment : Fragment(), View.OnClickListener,
             if (grantResults.size == 2) {
                 for (result in grantResults) {
                     if (result != PERMISSION_GRANTED) {
-                        ErrorDialog.newInstance(getString(R.string.permission_request))
+                        ErrorDialog.newInstance(getString(R.string.camera_audio_permission_request))
                             .show(childFragmentManager, FRAGMENT_DIALOG)
                         break
                     }
                 }
             } else {
-                ErrorDialog.newInstance(getString(R.string.permission_request))
+                ErrorDialog.newInstance(getString(R.string.camera_audio_permission_request))
                     .show(childFragmentManager, FRAGMENT_DIALOG)
             }
         } else {
@@ -285,7 +136,7 @@ class VideoFragment : Fragment(), View.OnClickListener,
      * Lint suppression - permission is checked in [hasPermissionsGranted]
      */
     @SuppressLint("MissingPermission")
-    private fun openCamera(width: Int, height: Int) {
+    override fun openCamera(width: Int, height: Int) {
         if (!hasPermissionsGranted(arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO))) {
             requestVideoPermissions()
             return
@@ -321,7 +172,7 @@ class VideoFragment : Fragment(), View.OnClickListener,
             mediaRecorder = MediaRecorder()
             manager.openCamera(cameraId, stateCallback, null)
         } catch (e: CameraAccessException) {
-            showToast("Cannot access the camera.")
+            activity?.showToast("Cannot access the camera.")
             cameraActivity.finish()
         } catch (e: NullPointerException) {
             // Currently an NPE is thrown when the Camera2API is used but not supported on the
@@ -336,7 +187,7 @@ class VideoFragment : Fragment(), View.OnClickListener,
     /**
      * Close the [CameraDevice].
      */
-    private fun closeCamera() {
+    override fun closeCamera() {
         try {
             cameraOpenCloseLock.acquire()
             closePreviewSession()
@@ -375,7 +226,7 @@ class VideoFragment : Fragment(), View.OnClickListener,
                     }
 
                     override fun onConfigureFailed(session: CameraCaptureSession) {
-                        if (activity != null) showToast("Failed")
+                        if (activity != null) activity?.showToast("Failed")
                     }
                 }, backgroundHandler
             )
@@ -408,38 +259,6 @@ class VideoFragment : Fragment(), View.OnClickListener,
         builder?.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
     }
 
-    /**
-     * Configures the necessary [android.graphics.Matrix] transformation to `textureView`.
-     * This method should not to be called until the camera preview size is determined in
-     * openCamera, or until the size of `textureView` is fixed.
-     *
-     * @param viewWidth  The width of `textureView`
-     * @param viewHeight The height of `textureView`
-     */
-    private fun configureTransform(viewWidth: Int, viewHeight: Int) {
-        activity ?: return
-        val rotation = (activity as FragmentActivity).windowManager.defaultDisplay.rotation
-        val matrix = Matrix()
-        val viewRect = RectF(0f, 0f, viewWidth.toFloat(), viewHeight.toFloat())
-        val bufferRect = RectF(0f, 0f, previewSize.height.toFloat(), previewSize.width.toFloat())
-        val centerX = viewRect.centerX()
-        val centerY = viewRect.centerY()
-
-        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
-            bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY())
-            matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL)
-            val scale = Math.max(
-                viewHeight.toFloat() / previewSize.height,
-                viewWidth.toFloat() / previewSize.width
-            )
-            with(matrix) {
-                postScale(scale, scale, centerX, centerY)
-                postRotate((90 * (rotation - 2)).toFloat(), centerX, centerY)
-            }
-        }
-        textureView.setTransform(matrix)
-    }
-
     @Throws(IOException::class)
     private fun setUpMediaRecorder() {
         val cameraActivity = activity ?: return
@@ -468,11 +287,6 @@ class VideoFragment : Fragment(), View.OnClickListener,
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
             prepare()
         }
-    }
-
-    fun getFileName(suffix: String, ext: String): String {
-        val date = Calendar.getInstance()
-        return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)}/$suffix${date.get(Calendar.DAY_OF_MONTH)}${date.get(Calendar.MONTH)}${date.get(Calendar.YEAR)}-${date.get(Calendar.HOUR_OF_DAY)}${date.get(Calendar.MINUTE)}${date.get(Calendar.SECOND)}$ext"
     }
 
     private fun startRecordingVideo() {
@@ -513,7 +327,7 @@ class VideoFragment : Fragment(), View.OnClickListener,
                     }
 
                     override fun onConfigureFailed(cameraCaptureSession: CameraCaptureSession) {
-                        if (activity != null) showToast("Failed")
+                        activity?.showToast("Failed")
                     }
                 }, backgroundHandler
             )
@@ -523,13 +337,6 @@ class VideoFragment : Fragment(), View.OnClickListener,
             Log.e(TAG, e.toString())
         }
 
-    }
-
-    private fun closePreviewSession() {
-        if (captureSession != null) {
-            captureSession?.close()
-            captureSession = null
-        }
     }
 
     private fun stopRecordingVideo() {
@@ -550,12 +357,10 @@ class VideoFragment : Fragment(), View.OnClickListener,
             reset()
         }
 
-        if (activity != null) showToast("Video saved: $nextVideoAbsolutePath")
+        activity?.showToast("Video saved: $nextVideoAbsolutePath")
         nextVideoAbsolutePath = null
         startPreview()
     }
-
-    private fun showToast(message: String) = Toast.makeText(activity, message, LENGTH_SHORT).show()
 
     /**
      * In this sample, we choose a video size with 3x4 aspect ratio. Also, we don't use sizes
@@ -571,7 +376,6 @@ class VideoFragment : Fragment(), View.OnClickListener,
 
     companion object {
         private const val FRAGMENT_DIALOG = "dialog"
-        private const val TAG = "VideoFragment"
         private const val SENSOR_ORIENTATION_DEFAULT_DEGREES = 90
         private const val SENSOR_ORIENTATION_INVERSE_DEGREES = 270
         private val DEFAULT_ORIENTATIONS = SparseIntArray().apply {
@@ -586,42 +390,6 @@ class VideoFragment : Fragment(), View.OnClickListener,
             append(Surface.ROTATION_180, 90)
             append(Surface.ROTATION_270, 0)
         }
-
-        /**
-         * Given [choices] of [Size]s supported by a camera, chooses the smallest one whose
-         * width and height are at least as large as the respective requested values, and whose aspect
-         * ratio matches with the specified value.
-         *
-         * @param choices     The list of sizes that the camera supports for the intended output class
-         * @param width       The minimum desired width
-         * @param height      The minimum desired height
-         * @param aspectRatio The aspect ratio
-         * @return The optimal [Size], or an arbitrary one if none were big enough
-         */
-        @JvmStatic
-        private fun chooseOptimalSize(
-            choices: Array<Size>,
-            width: Int,
-            height: Int,
-            aspectRatio: Size
-        ): Size {
-
-            // Collect the supported resolutions that are at least as big as the preview Surface
-            val w = aspectRatio.width
-            val h = aspectRatio.height
-            val bigEnough = choices.filter {
-                it.height == it.width * h / w && it.width >= width && it.height >= height
-            }
-
-            // Pick the smallest of those, assuming we found any
-            return if (bigEnough.isNotEmpty()) {
-                Collections.min(bigEnough, CompareSizesByArea())
-            } else {
-                choices[0]
-            }
-        }
-
-        fun newInstance(): VideoFragment = VideoFragment()
     }
 
 }
