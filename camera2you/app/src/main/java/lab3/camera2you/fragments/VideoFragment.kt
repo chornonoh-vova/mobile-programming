@@ -16,15 +16,20 @@ import android.os.HandlerThread
 import android.util.Log
 import android.util.Size
 import android.util.SparseIntArray
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Surface
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.fragment.app.FragmentActivity
-import lab3.camera2you.*
+import lab3.camera2you.MainActivity
+import lab3.camera2you.R
 import lab3.camera2you.dialogs.ConfirmationDialog
 import lab3.camera2you.dialogs.ErrorDialog
+import lab3.camera2you.showToast
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -217,7 +222,8 @@ class VideoFragment : BaseCameraFragment(), View.OnClickListener,
             val previewSurface = Surface(texture)
             previewRequestBuilder.addTarget(previewSurface)
 
-            cameraDevice?.createCaptureSession(listOf(previewSurface),
+            cameraDevice?.createCaptureSession(
+                listOf(previewSurface),
                 object : CameraCaptureSession.StateCallback() {
 
                     override fun onConfigured(session: CameraCaptureSession) {
@@ -313,7 +319,8 @@ class VideoFragment : BaseCameraFragment(), View.OnClickListener,
 
             // Start a capture session
             // Once the session starts, we can update the UI and start recording
-            cameraDevice?.createCaptureSession(surfaces,
+            cameraDevice?.createCaptureSession(
+                surfaces,
                 object : CameraCaptureSession.StateCallback() {
 
                     override fun onConfigured(cameraCaptureSession: CameraCaptureSession) {
@@ -360,6 +367,8 @@ class VideoFragment : BaseCameraFragment(), View.OnClickListener,
         activity?.showToast("Video saved: $nextVideoAbsolutePath")
         nextVideoAbsolutePath = null
         startPreview()
+
+        refreshGallery()
     }
 
     /**

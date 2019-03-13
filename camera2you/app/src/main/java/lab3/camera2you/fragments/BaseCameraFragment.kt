@@ -18,8 +18,11 @@ import lab3.camera2you.AutoFitTextureView
 import lab3.camera2you.CompareSizesByArea
 import java.util.*
 import java.util.concurrent.Semaphore
+import android.media.MediaScannerConnection
+import android.net.Uri
 
-abstract class BaseCameraFragment: Fragment() {
+
+abstract class BaseCameraFragment : Fragment() {
     protected val TAG: String = this.javaClass.name
 
     /**
@@ -293,6 +296,16 @@ abstract class BaseCameraFragment: Fragment() {
             bigEnough.size > 0 -> Collections.min(bigEnough, CompareSizesByArea())
             notBigEnough.size > 0 -> Collections.max(notBigEnough, CompareSizesByArea())
             else -> choices[0]
+        }
+    }
+
+    /**
+     * Refresh gallery
+     */
+    protected fun refreshGallery() {
+        MediaScannerConnection.scanFile(activity, arrayOf(Environment.getExternalStorageDirectory().toString()), null) { path, uri ->
+            Log.i("ExternalStorage", "Scanned $path:")
+            Log.i("ExternalStorage", "-> uri=$uri")
         }
     }
 

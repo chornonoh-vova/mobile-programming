@@ -4,13 +4,18 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.*
+import android.graphics.ImageFormat
+import android.graphics.Point
+import android.graphics.SurfaceTexture
 import android.hardware.camera2.*
 import android.media.ImageReader
 import android.os.Bundle
 import android.util.Log
 import android.util.SparseIntArray
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Surface
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import lab3.camera2you.*
@@ -148,7 +153,7 @@ class PhotoFragment : BaseCameraFragment(), View.OnClickListener,
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        file = File(getFileName("P",".jpg"))
+        file = File(getFileName("P", ".jpg"))
     }
 
     private fun requestCameraPermission() {
@@ -364,7 +369,8 @@ class PhotoFragment : BaseCameraFragment(), View.OnClickListener,
             previewRequestBuilder.addTarget(surface)
 
             // Here, we create a CameraCaptureSession for camera preview.
-            cameraDevice?.createCaptureSession(Arrays.asList(surface, imageReader?.surface),
+            cameraDevice?.createCaptureSession(
+                Arrays.asList(surface, imageReader?.surface),
                 object : CameraCaptureSession.StateCallback() {
 
                     override fun onConfigured(cameraCaptureSession: CameraCaptureSession) {
@@ -490,8 +496,10 @@ class PhotoFragment : BaseCameraFragment(), View.OnClickListener,
                 ) {
                     activity?.showToast("Saved: $file")
                     Log.d(TAG, file.toString())
-                    file = File(getFileName("P",".jpg"))
+                    file = File(getFileName("P", ".jpg"))
                     unlockFocus()
+
+                    refreshGallery()
                 }
             }
 
