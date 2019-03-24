@@ -16,6 +16,9 @@
 
     <string name="video_size">%.2f MB</string>
     <string name="video_library_title">Video library</string>
+    <string name="settings_action_text">Settings</string>
+    <string name="dark_theme_pref_text">Enable dark theme</string>
+    <string name="settings_title">Settings</string>
 
     <plurals name="song_count">
         <item quantity="one">%d song</item>

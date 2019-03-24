@@ -42,7 +42,7 @@ class AlbumsFragment : Fragment() {
     }
 
     private val itemListener: (AlbumItem) -> Unit = {
-        AlbumSongsActivity.start(activity!!, it.name)
+        AlbumSongsActivity.start(activity!!, it.name, it.id)
     }
 
     private val albumPlayListener: (AlbumItem) -> Unit = {

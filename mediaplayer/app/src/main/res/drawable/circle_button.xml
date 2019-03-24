@@ -4,7 +4,7 @@
     android:shape="oval">
 
     <solid
-        android:color="#fff"/>
+        android:color="?attr/colorBackgroundFloating"/>
 
     <size
         android:width="108dp"

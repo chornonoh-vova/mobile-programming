@@ -3,7 +3,6 @@ package lab3.mediaplayer.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,7 +13,7 @@ import lab3.mediaplayer.media.library.LocalVideoSource
 import lab3.mediaplayer.model.VideoItem
 import lab3.mediaplayer.ui.adapters.VideosListAdapter
 
-class VideoLibraryActivity : AppCompatActivity() {
+class VideoLibraryActivity : ThemedActivity() {
 
     private lateinit var videosList: List<VideoItem>
     private lateinit var adapter: VideosListAdapter

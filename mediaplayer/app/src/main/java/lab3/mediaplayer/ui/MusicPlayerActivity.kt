@@ -8,7 +8,6 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.View
 import android.widget.SeekBar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.squareup.picasso.Picasso
@@ -19,7 +18,7 @@ import lab3.mediaplayer.media.MusicService
 import lab3.mediaplayer.media.library.LocalMusicSource
 
 
-abstract class MusicPlayerActivity : AppCompatActivity() {
+abstract class MusicPlayerActivity : ThemedActivity() {
     protected val bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout> by lazy {
         BottomSheetBehavior.from(bottom_layout)
     }

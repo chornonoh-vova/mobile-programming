@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.support.v4.media.session.MediaSessionCompat
 import android.util.Rational
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import kotlinx.android.synthetic.main.activity_video.*
 import lab3.mediaplayer.R
@@ -18,7 +17,7 @@ import lab3.mediaplayer.media.PlayerState
 import lab3.mediaplayer.media.VideoPlayerHolder
 import lab3.mediaplayer.model.VideoItem
 
-class VideoActivity : AppCompatActivity() {
+class VideoActivity : ThemedActivity() {
     private val mediaSessionCompat by lazy { createMediaSession() }
     private val mediaSessionConnector by lazy { createMediaSessionConnector() }
 

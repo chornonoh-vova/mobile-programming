@@ -2,12 +2,14 @@ package lab3.mediaplayer.ui
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_album_songs.*
 import lab3.mediaplayer.R
 import lab3.mediaplayer.media.library.BrowseLibrary
@@ -16,6 +18,7 @@ import lab3.mediaplayer.model.SongItem
 import lab3.mediaplayer.ui.adapters.SongListAdapter
 
 class AlbumSongsActivity : MusicPlayerActivity() {
+    private lateinit var albumId: String
     private lateinit var albumName: String
     private lateinit var songsList: List<SongItem>
     private lateinit var adapter: SongListAdapter
@@ -30,6 +33,13 @@ class AlbumSongsActivity : MusicPlayerActivity() {
             intent.getStringExtra(ALBUM_KEY)
         }
 
+        albumId = if (savedInstanceState != null) {
+            savedInstanceState.getString(ALBUM_ID_KEY) ?: ""
+        } else {
+            intent.getStringExtra(ALBUM_ID_KEY)
+        }
+
+        collapsingToolbar.title = albumName
         toolbar.title = albumName
 
         setSupportActionBar(toolbar)
@@ -44,11 +54,19 @@ class AlbumSongsActivity : MusicPlayerActivity() {
         songs_list.addItemDecoration(DividerItemDecoration(this, RecyclerView.VERTICAL))
         songs_list.itemAnimator = DefaultItemAnimator()
         songs_list.adapter = adapter
+
+        val artworkUri = Uri.parse("content://media/external/audio/albumart")
+
+        Picasso.get()
+            .load(Uri.withAppendedPath(artworkUri, albumId))
+            .error(R.drawable.ic_music_video_black_24dp)
+            .into(album_artwork)
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
         super.onSaveInstanceState(outState, outPersistentState)
         outState?.putString(ALBUM_KEY, albumName)
+        outState?.putString(ALBUM_ID_KEY, albumId)
     }
 
     override fun mediaControlsInitialized() {}
@@ -60,10 +78,12 @@ class AlbumSongsActivity : MusicPlayerActivity() {
 
     companion object {
         const val ALBUM_KEY = "album"
+        const val ALBUM_ID_KEY = "album_id"
 
-        fun start(context: Context, album: String) {
+        fun start(context: Context, album: String, albumId: String) {
             val starter = Intent(context, AlbumSongsActivity::class.java)
             starter.putExtra(ALBUM_KEY, album)
+            starter.putExtra(ALBUM_ID_KEY, albumId)
             context.startActivity(starter)
         }
     }

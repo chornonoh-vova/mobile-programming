@@ -1,42 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.MusicLibraryActivity">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/toolbar"
-            />
-
-        <com.google.android.material.tabs.TabLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.Design.TabLayout"
-            android:id="@+id/tabs"
-            app:tabMode="scrollable"
-            />
+            app:layout_scrollFlags="scroll|enterAlways|snap"/>
+
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
+    <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:id="@+id/content_viewpager"
-        android:layout_marginBottom="64dp">
-    </androidx.viewpager.widget.ViewPager>
-
-    <include
-        layout="@layout/bottom_player_layout"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        app:layout_anchorGravity="bottom"/>
+        class="lab3.mediaplayer.ui.fragments.SettingsFragment"
+        android:id="@+id/settingsFragment"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

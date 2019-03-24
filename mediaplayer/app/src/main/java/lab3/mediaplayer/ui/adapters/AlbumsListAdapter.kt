@@ -1,5 +1,6 @@
 package lab3.mediaplayer.ui.adapters
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import lab3.mediaplayer.R
 import lab3.mediaplayer.model.AlbumItem
 
@@ -22,6 +24,13 @@ class AlbumsListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val album = dataset[position]
+
+        val artworkUri = Uri.parse("content://media/external/audio/albumart")
+
+        Picasso.get()
+            .load(Uri.withAppendedPath(artworkUri, album.id))
+            .error(R.drawable.ic_music_video_black_24dp)
+            .into(holder.albumImage)
 
         holder.albumName.text = album.name
 

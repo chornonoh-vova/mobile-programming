@@ -7,7 +7,7 @@
     app:layout_behavior="@string/bottom_sheet_behavior"
     app:behavior_peekHeight="64dp"
     app:behavior_hideable="false"
-    android:background="@android:color/background_light"
+    android:background="?attr/colorBackgroundFloating"
     android:elevation="8dp"
     android:id="@+id/bottom_layout">
 
