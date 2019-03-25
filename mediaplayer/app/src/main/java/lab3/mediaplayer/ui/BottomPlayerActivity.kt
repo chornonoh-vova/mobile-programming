@@ -1,28 +1,25 @@
 package lab3.mediaplayer.ui
 
 import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.widget.SeekBar
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_music_player.*
+import kotlinx.android.synthetic.main.bottom_player_layout.*
 import lab3.mediaplayer.R
 import lab3.mediaplayer.isPlaying
 import lab3.mediaplayer.media.MusicService
 import lab3.mediaplayer.media.library.LocalMusicSource
 
-class MusicPlayerActivity: ThemedActivity() {
 
+abstract class BottomPlayerActivity : ThemedActivity() {
     lateinit var mediaBrowser: MediaBrowserCompat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_music_player)
+
         mediaBrowser =
             MediaBrowserCompat(this, ComponentName(this, MusicService::class.java), connectionCallbacks, null)
     }
@@ -44,30 +41,29 @@ class MusicPlayerActivity: ThemedActivity() {
         override fun onConnected() {
             println("Connected")
             mediaBrowser.sessionToken.also {
-                val mediaController = MediaControllerCompat(this@MusicPlayerActivity, it)
+                val mediaController = MediaControllerCompat(this@BottomPlayerActivity, it)
 
-                MediaControllerCompat.setMediaController(this@MusicPlayerActivity, mediaController)
+                MediaControllerCompat.setMediaController(this@BottomPlayerActivity, mediaController)
             }
 
             buildTransportControls()
 
-            val mediaController = MediaControllerCompat.getMediaController(this@MusicPlayerActivity)
+            val mediaController = MediaControllerCompat.getMediaController(this@BottomPlayerActivity)
 
             // update controls based on playback state
             when (mediaController.playbackState.state) {
                 PlaybackStateCompat.STATE_PLAYING -> {
                     updateWithMetadata(mediaController.metadata)
-                    current_time.text = getTime(mediaController.playbackState.position)
-                    time_seek_bar.progress = mediaController.playbackState.position.toInt()
-                    play_pause_button.setImageDrawable(getDrawable(R.drawable.ic_pause_32dp))
+                    play_pause.setImageDrawable(getDrawable(R.drawable.ic_pause_32dp))
                 }
                 PlaybackStateCompat.STATE_PAUSED -> {
                     updateWithMetadata(mediaController.metadata)
-                    play_pause_button.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_32dp))
+                    play_pause.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_32dp))
                 }
                 else -> {
                     updateWithMetadata(mediaController.metadata)
-                    play_pause_button.setImageDrawable(getDrawable(R.drawable.ic_pause_32dp))
+                    play_pause.setImageDrawable(getDrawable(R.drawable.ic_pause_32dp))
+                    mediaControlsInitialized()
                 }
             }
         }
@@ -77,48 +73,19 @@ class MusicPlayerActivity: ThemedActivity() {
     private fun buildTransportControls() {
         val mediaController = MediaControllerCompat.getMediaController(this)
 
-        play_pause_button.setOnClickListener {
+        play_pause.setOnClickListener {
             val state = mediaController.playbackState.state
             if (state == PlaybackStateCompat.STATE_PLAYING) {
-                play_pause_button.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_32dp))
+                play_pause.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_32dp))
                 mediaController.transportControls.pause()
             } else {
-                play_pause_button.setImageDrawable(getDrawable(R.drawable.ic_pause_32dp))
+                play_pause.setImageDrawable(getDrawable(R.drawable.ic_pause_32dp))
                 mediaController.transportControls.play()
             }
         }
-
-        next_button.setOnClickListener {
-            mediaController.transportControls.skipToNext()
-        }
-
-        prev_button.setOnClickListener {
-            mediaController.transportControls.skipToPrevious()
-        }
-
-        time_seek_bar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                // !Important! when a event from music service to update playback state don't seek
-                // Of course, seek to desired position if user wants to
-                if (fromUser) {
-                    mediaController.transportControls.seekTo(progress.toLong())
-                }
-            }
-
-            // Little optimization - pause when user starts dragging
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                mediaController.transportControls.pause()
-            }
-
-            // When user selected the desired position - continue playing
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                mediaController.transportControls.play()
-            }
-        })
 
         mediaController.registerCallback(controllerCallback)
     }
-
 
     // callbacks for UI to react for updating current state and metadata
     private var controllerCallback = object : MediaControllerCompat.Callback() {
@@ -130,15 +97,14 @@ class MusicPlayerActivity: ThemedActivity() {
             if (state != null) {
                 if (state.state == oldPlaybackState && state.isPlaying) {
                     println("Updating position")
-                    current_time.text = getTime(state.position)
-                    time_seek_bar.progress = state.position.toInt()
+                    play_progress.progress = state.position.toInt()
                 } else {
                     println("Updating all")
                     oldPlaybackState = state.state
                     if (state.isPlaying) {
-                        play_pause_button.setImageDrawable(getDrawable(R.drawable.ic_pause_32dp))
+                        play_pause.setImageDrawable(getDrawable(R.drawable.ic_pause_32dp))
                     } else {
-                        play_pause_button.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_32dp))
+                        play_pause.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_32dp))
                     }
                 }
             }
@@ -154,10 +120,9 @@ class MusicPlayerActivity: ThemedActivity() {
                 metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
             )
             val duration = metadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
-            time_seek_bar.max = duration.toInt()
-            time_seek_bar.progress = 0
-            total_time.text = getTime(duration)
-            song_name.text = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE).toString()
+            play_progress.max = duration.toInt()
+            play_progress.progress = 0
+            song_header.text = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE).toString()
             song_artist.text = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_ARTIST).toString()
             val albumUri = LocalMusicSource.getAlbumArtUriForMedia(
                 this,
@@ -170,19 +135,73 @@ class MusicPlayerActivity: ThemedActivity() {
         }
     }
 
-    private fun getTime(ms: Long): String {
-        val s = ms / 1000
+    // Optional variable to set playlist index to begin from
+    var playStartIndex = 0
 
-        val minutes = (s / 60).toString().padStart(2, '0')
-        val seconds = (s % 60).toString().padStart(2, '0')
+    // this callback can be called for browsing for music
+    fun browseAllSongs() = object : MediaBrowserCompat.SubscriptionCallback() {
+        override fun onChildrenLoaded(parentId: String, children: MutableList<MediaBrowserCompat.MediaItem>) {
+            val mediaController = MediaControllerCompat.getMediaController(this@BottomPlayerActivity)
 
-        return "$minutes:$seconds"
-    }
+            // Clear all items from playlist first
+            mediaController.removeQueueItem(null)
 
-    companion object {
-        fun start(context: Context) {
-            val starter = Intent(context, MusicPlayerActivity::class.java)
-            context.startActivity(starter)
+            children.forEach {
+                mediaController.addQueueItem(it.description)
+            }
+
+            mediaController.transportControls.skipToQueueItem(playStartIndex.toLong())
+
+            mediaController.transportControls.prepare()
+
+            mediaController.transportControls.play()
         }
     }
+
+    fun browseAlbum(album: String) = object : MediaBrowserCompat.SubscriptionCallback() {
+        override fun onChildrenLoaded(parentId: String, children: MutableList<MediaBrowserCompat.MediaItem>) {
+            val mediaController = MediaControllerCompat.getMediaController(this@BottomPlayerActivity)
+
+            val songsInAlbum = LocalMusicSource.getSongs(this@BottomPlayerActivity).filter {
+                it.album == album
+            }
+
+            mediaController.removeQueueItem(null)
+
+            children.forEach { mi ->
+                if (songsInAlbum.any { it.id == mi.mediaId }) {
+                    mediaController.addQueueItem(mi.description)
+                }
+            }
+
+            mediaController.transportControls.skipToQueueItem(playStartIndex.toLong())
+            mediaController.transportControls.prepare()
+            mediaController.transportControls.play()
+        }
+    }
+
+    fun browseArtist(artist: String) = object : MediaBrowserCompat.SubscriptionCallback() {
+        override fun onChildrenLoaded(parentId: String, children: MutableList<MediaBrowserCompat.MediaItem>) {
+            val mediaController = MediaControllerCompat.getMediaController(this@BottomPlayerActivity)
+
+            val songsForArtist = LocalMusicSource.getSongs(this@BottomPlayerActivity).filter {
+                it.artist == artist
+            }
+
+            mediaController.removeQueueItem(null)
+
+            children.forEach { mi ->
+                if (songsForArtist.any { it.id == mi.mediaId }) {
+                    mediaController.addQueueItem(mi.description)
+                }
+            }
+
+            mediaController.transportControls.skipToQueueItem(playStartIndex.toLong())
+            mediaController.transportControls.prepare()
+            mediaController.transportControls.play()
+        }
+    }
+
+    // function to be called when player UI is ready
+    protected abstract fun mediaControlsInitialized()
 }

@@ -11,13 +11,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_album_songs.*
+import kotlinx.android.synthetic.main.bottom_player_layout.*
 import lab3.mediaplayer.R
 import lab3.mediaplayer.media.library.BrowseLibrary
 import lab3.mediaplayer.media.library.LocalMusicSource
 import lab3.mediaplayer.model.SongItem
 import lab3.mediaplayer.ui.adapters.SongListAdapter
 
-class AlbumSongsActivity : MusicPlayerActivity() {
+class AlbumSongsActivity : BottomPlayerActivity() {
     private lateinit var albumId: String
     private lateinit var albumName: String
     private lateinit var songsList: List<SongItem>
@@ -61,6 +62,10 @@ class AlbumSongsActivity : MusicPlayerActivity() {
             .load(Uri.withAppendedPath(artworkUri, albumId))
             .error(R.drawable.ic_music_video_black_24dp)
             .into(album_artwork)
+
+        bottom_layout.setOnClickListener {
+            MusicPlayerActivity.start(this)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {

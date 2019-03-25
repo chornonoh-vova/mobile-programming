@@ -9,13 +9,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_artist_songs.*
+import kotlinx.android.synthetic.main.bottom_player_layout.*
 import lab3.mediaplayer.R
 import lab3.mediaplayer.media.library.BrowseLibrary
 import lab3.mediaplayer.media.library.LocalMusicSource
 import lab3.mediaplayer.model.SongItem
 import lab3.mediaplayer.ui.adapters.SongListAdapter
 
-class ArtistSongsActivity : MusicPlayerActivity() {
+class ArtistSongsActivity : BottomPlayerActivity() {
     private lateinit var artistName: String
     private lateinit var songsList: List<SongItem>
     private lateinit var adapter: SongListAdapter
@@ -44,6 +45,10 @@ class ArtistSongsActivity : MusicPlayerActivity() {
         songs_list.addItemDecoration(DividerItemDecoration(this, RecyclerView.VERTICAL))
         songs_list.itemAnimator = DefaultItemAnimator()
         songs_list.adapter = adapter
+
+        bottom_layout.setOnClickListener {
+            MusicPlayerActivity.start(this)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {

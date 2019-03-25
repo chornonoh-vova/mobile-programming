@@ -9,12 +9,13 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_music_library.*
+import kotlinx.android.synthetic.main.bottom_player_layout.*
 import lab3.mediaplayer.R
 import lab3.mediaplayer.ui.fragments.AlbumsFragment
 import lab3.mediaplayer.ui.fragments.ArtistsFragment
 import lab3.mediaplayer.ui.fragments.SongsFragment
 
-class MusicLibraryActivity : MusicPlayerActivity() {
+class MusicLibraryActivity : BottomPlayerActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +29,8 @@ class MusicLibraryActivity : MusicPlayerActivity() {
 
         tabs.setupWithViewPager(content_viewpager)
 
-        if (intent.getBooleanExtra(EXPAND_PLAYER_KEY, false)) {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        bottom_layout.setOnClickListener {
+            MusicPlayerActivity.start(this)
         }
     }
 

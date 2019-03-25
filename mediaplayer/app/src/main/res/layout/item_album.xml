@@ -24,7 +24,7 @@
     <ImageButton
         android:layout_width="36dp"
         android:layout_height="36dp"
-        app:srcCompat="@drawable/ic_play_arrow_black_24dp"
+        app:srcCompat="@drawable/ic_play_arrow_32dp"
         android:id="@+id/play_album_button"
         android:background="@drawable/circle_button"
         app:layout_constraintEnd_toEndOf="@+id/album_image"

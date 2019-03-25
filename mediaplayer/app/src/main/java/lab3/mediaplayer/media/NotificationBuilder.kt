@@ -22,9 +22,10 @@ import com.squareup.picasso.Target
 import lab3.mediaplayer.R
 import lab3.mediaplayer.isPlaying
 import lab3.mediaplayer.ui.MusicLibraryActivity
+import lab3.mediaplayer.ui.MusicPlayerActivity
 import java.lang.Exception
 
-const val NOW_PLAYING_CHANNEL: String = "lab3.mediaplayer.music.NOW_PLAYING"
+const val NOW_PLAYING_CHANNEL: String = "com.hbvhuwe.mediaplayer.music.NOW_PLAYING"
 const val NOW_PLAYING_NOTIFICATION: Int = 0xb339
 const val REQUEST_CODE = 501
 
@@ -123,8 +124,7 @@ class NotificationBuilder(private val context: Context) {
     }
 
     private fun createContentIntent(): PendingIntent {
-        val openUi = Intent(context, MusicLibraryActivity::class.java)
-        openUi.putExtra(MusicLibraryActivity.EXPAND_PLAYER_KEY, true)
+        val openUi = Intent(context, MusicPlayerActivity::class.java)
         openUi.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         return PendingIntent.getActivity(context, REQUEST_CODE, openUi, PendingIntent.FLAG_CANCEL_CURRENT)
     }

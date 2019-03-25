@@ -124,7 +124,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                app:srcCompat="@drawable/ic_video_library_black_24dp"
+                app:srcCompat="@drawable/ic_video_library_32dp"
                 android:id="@+id/imageView3"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginStart="8dp"
