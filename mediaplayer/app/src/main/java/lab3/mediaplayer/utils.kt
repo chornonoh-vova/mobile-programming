@@ -1,9 +1,14 @@
 package lab3.mediaplayer
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 
 import android.support.v4.media.session.PlaybackStateCompat
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
+import java.lang.Exception
 
 /**
  * Useful extension methods for [PlaybackStateCompat].
@@ -15,7 +20,22 @@ inline val PlaybackStateCompat.isStopped
     get() = state == PlaybackStateCompat.STATE_STOPPED
 
 fun MediaDescriptionCompat.toMetadata(): MediaMetadataCompat {
-    return MediaMetadataCompat.Builder()
+    val builder = MediaMetadataCompat.Builder()
+
+    Picasso.get().load(iconUri).into(object: Target {
+        override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+        }
+
+        override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+        }
+
+        override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+            builder.putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, bitmap)
+        }
+
+    })
+
+    return builder
         .putString(MediaMetadataCompat.METADATA_KEY_TITLE, this.title.toString())
         .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, this.description.toString())
         .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, this.subtitle.toString())

@@ -8,6 +8,7 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.MediaStore
 import android.support.v4.media.MediaMetadataCompat
+import com.squareup.picasso.Picasso
 import lab3.mediaplayer.model.AlbumItem
 import lab3.mediaplayer.model.ArtistItem
 import lab3.mediaplayer.model.SongItem

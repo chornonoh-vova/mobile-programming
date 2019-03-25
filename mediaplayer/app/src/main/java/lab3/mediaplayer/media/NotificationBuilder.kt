@@ -6,7 +6,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -15,9 +17,12 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.media.session.MediaButtonReceiver
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
 import lab3.mediaplayer.R
 import lab3.mediaplayer.isPlaying
 import lab3.mediaplayer.ui.MusicLibraryActivity
+import java.lang.Exception
 
 const val NOW_PLAYING_CHANNEL: String = "lab3.mediaplayer.music.NOW_PLAYING"
 const val NOW_PLAYING_NOTIFICATION: Int = 0xb339
@@ -88,7 +93,7 @@ class NotificationBuilder(private val context: Context) {
             .setContentInfo(description.description)
             .setDeleteIntent(stopPendingIntent)
             .setShowWhen(false)
-            .setLargeIcon(BitmapFactory.decodeFile(description.iconUri.toString()))
+            .setLargeIcon(description.iconBitmap)
             .setOnlyAlertOnce(true)
             .setSmallIcon(R.drawable.ic_notification)
             .setStyle(mediaStyle)

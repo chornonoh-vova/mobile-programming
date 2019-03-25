@@ -1,6 +1,7 @@
 package lab3.mediaplayer.model
 
 import android.support.v4.media.MediaMetadataCompat
+import com.squareup.picasso.Picasso
 
 data class SongItem(
     val id: String,
