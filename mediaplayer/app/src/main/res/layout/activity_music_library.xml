@@ -30,6 +30,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/content_viewpager"
         android:layout_marginBottom="64dp">
+
     </androidx.viewpager.widget.ViewPager>
 
     <include

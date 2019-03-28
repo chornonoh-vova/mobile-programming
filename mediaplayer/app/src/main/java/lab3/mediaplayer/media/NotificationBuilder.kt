@@ -88,10 +88,9 @@ class NotificationBuilder(private val context: Context) {
             .setShowCancelButton(true)
 
         return builder.setContentIntent(createContentIntent())
-            .setColor(ContextCompat.getColor(context, R.color.notification_bg))
+//            .setColor(ContextCompat.getColor(context, R.color.notification_bg))
             .setContentTitle(description.title)
-            .setContentText(description.subtitle)
-            .setContentInfo(description.description)
+            .setContentText("${description.subtitle} - ${description.description}")
             .setDeleteIntent(stopPendingIntent)
             .setShowWhen(false)
             .setLargeIcon(description.iconBitmap)

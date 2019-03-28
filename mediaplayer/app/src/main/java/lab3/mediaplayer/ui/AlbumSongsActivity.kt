@@ -2,14 +2,18 @@ package lab3.mediaplayer.ui
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
+import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.activity_album_songs.*
 import kotlinx.android.synthetic.main.bottom_player_layout.*
 import lab3.mediaplayer.R
@@ -17,6 +21,7 @@ import lab3.mediaplayer.media.library.BrowseLibrary
 import lab3.mediaplayer.media.library.LocalMusicSource
 import lab3.mediaplayer.model.SongItem
 import lab3.mediaplayer.ui.adapters.SongListAdapter
+import java.lang.Exception
 
 class AlbumSongsActivity : BottomPlayerActivity() {
     private lateinit var albumId: String
@@ -60,8 +65,27 @@ class AlbumSongsActivity : BottomPlayerActivity() {
 
         Picasso.get()
             .load(Uri.withAppendedPath(artworkUri, albumId))
-            .error(R.drawable.ic_music_video_black_24dp)
-            .into(album_artwork)
+            .into(object: Target {
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    album_artwork.setImageResource(R.drawable.ic_music_video_black_24dp)
+                }
+
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    album_artwork.setImageBitmap(bitmap)
+                    bitmap?.let { bm ->
+                        Palette.from(bm).generate { palette ->
+                            val textSwatch = palette?.vibrantSwatch
+
+                            textSwatch?.let {
+                                collapsingToolbar.setBackgroundColor(it.rgb)
+                                collapsingToolbar.setExpandedTitleColor(it.bodyTextColor)
+                            }
+                        }
+                    }
+                }
+            })
 
         bottom_layout.setOnClickListener {
             MusicPlayerActivity.start(this)

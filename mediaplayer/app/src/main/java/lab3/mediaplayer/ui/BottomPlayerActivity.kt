@@ -6,6 +6,9 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.bottom_player_layout.*
 import lab3.mediaplayer.R
@@ -60,6 +63,10 @@ abstract class BottomPlayerActivity : ThemedActivity() {
                     updateWithMetadata(mediaController.metadata)
                     play_pause.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_32dp))
                 }
+                PlaybackStateCompat.STATE_NONE -> {
+                    bottom_layout.isClickable = false
+                    play_pause.visibility = View.INVISIBLE
+                }
                 else -> {
                     updateWithMetadata(mediaController.metadata)
                     play_pause.setImageDrawable(getDrawable(R.drawable.ic_pause_32dp))
@@ -99,6 +106,8 @@ abstract class BottomPlayerActivity : ThemedActivity() {
                     println("Updating position")
                     play_progress.progress = state.position.toInt()
                 } else {
+                    bottom_layout.isClickable = true
+                    play_pause.visibility = View.VISIBLE
                     println("Updating all")
                     oldPlaybackState = state.state
                     if (state.isPlaying) {
@@ -121,7 +130,7 @@ abstract class BottomPlayerActivity : ThemedActivity() {
             )
             val duration = metadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
             play_progress.max = duration.toInt()
-            play_progress.progress = 0
+//            play_progress.progress = 0
             song_header.text = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE).toString()
             song_artist.text = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_ARTIST).toString()
             val albumUri = LocalMusicSource.getAlbumArtUriForMedia(

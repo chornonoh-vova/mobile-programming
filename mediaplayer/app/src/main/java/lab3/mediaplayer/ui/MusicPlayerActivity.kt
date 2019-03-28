@@ -3,18 +3,27 @@ package lab3.mediaplayer.ui
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.widget.SeekBar
+import androidx.core.content.ContextCompat
+import androidx.palette.graphics.Palette
 import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.activity_music_player.*
 import lab3.mediaplayer.R
 import lab3.mediaplayer.isPlaying
 import lab3.mediaplayer.media.MusicService
 import lab3.mediaplayer.media.library.LocalMusicSource
+import java.lang.Exception
 
 class MusicPlayerActivity: ThemedActivity() {
 
@@ -155,7 +164,7 @@ class MusicPlayerActivity: ThemedActivity() {
             )
             val duration = metadataCompat.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
             time_seek_bar.max = duration.toInt()
-            time_seek_bar.progress = 0
+//            time_seek_bar.progress = 0
             total_time.text = getTime(duration)
             song_name.text = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE).toString()
             song_artist.text = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_ARTIST).toString()
@@ -165,8 +174,39 @@ class MusicPlayerActivity: ThemedActivity() {
             )
             Picasso.get()
                 .load(albumUri)
-                .error(R.drawable.ic_music_video_black_24dp)
-                .into(song_album_art)
+                .into(object: Target {
+                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+
+                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                        song_album_art.setImageResource(R.drawable.ic_music_video_black_24dp)
+                    }
+
+                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                        song_album_art.setImageBitmap(bitmap)
+                        bitmap?.let { bm ->
+                            Palette.from(bm).generate { palette ->
+                                val textSwatch = palette?.mutedSwatch
+
+                                textSwatch?.let {
+                                    main_background.setBackgroundColor(it.rgb)
+                                    main_background.setStatusBarBackgroundColor(it.rgb)
+                                    
+                                    song_name.setTextColor(it.bodyTextColor)
+                                    song_artist.setTextColor(it.bodyTextColor)
+                                    total_time.setTextColor(it.bodyTextColor)
+                                    current_time.setTextColor(it.bodyTextColor)
+
+                                    play_pause_button.setColorFilter(it.bodyTextColor)
+                                    next_button.setColorFilter(it.bodyTextColor)
+                                    prev_button.setColorFilter(it.bodyTextColor)
+
+                                    time_seek_bar.progressBackgroundTintList = ColorStateList.valueOf(it.bodyTextColor)
+                                    time_seek_bar.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(this@MusicPlayerActivity, R.color.primaryColor))
+                                }
+                            }
+                        }
+                    }
+                })
         }
     }
 
