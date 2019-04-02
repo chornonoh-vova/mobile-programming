@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          package="lab3.mediaplayer">
+          package="com.hbvhuwe.mediaplayer">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
@@ -48,7 +48,7 @@
 
         <!-- Service to play music in background -->
         <service
-            android:name=".media.MusicService"
+            android:name="com.hbvhuwe.mediaplayer.media.MusicService"
             android:enabled="true"
             android:exported="true"
             tools:ignore="ExportedService"
