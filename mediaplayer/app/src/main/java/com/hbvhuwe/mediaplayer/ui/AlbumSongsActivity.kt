@@ -76,8 +76,8 @@ class AlbumSongsActivity : BottomPlayerActivity() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
-        super.onSaveInstanceState(outState, outPersistentState)
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
         outState?.putString(ALBUM_KEY, albumName)
         outState?.putString(ALBUM_ID_KEY, albumId)
     }
