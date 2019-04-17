@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">OSU!</string>
+    <string name="start_game_text">Start game</string>
+    <string name="save_to_top_10_text">Save to top 10</string>
+    <string name="return_to_main_text">Return to main menu</string>
+    <string name="result_activity_title">Result</string>
+    <string name="not_in_top10_text">Unfortunately, you are not in top 10 players, try to play again :)</string>
+    <string name="image_saved_text">Saved!</string>
+    <string name="name_hint_text">Your name</string>
+
+    <plurals name="score">
+        <item quantity="one">Your score is: %d point</item>
+        <item quantity="other">Your score is: %d points</item>
+    </plurals>
+
+    <plurals name="in_game_score">
+        <item quantity="one">Score: %d point</item>
+        <item quantity="other">Score: %d points</item>
+    </plurals>
+</resources>

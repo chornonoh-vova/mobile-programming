@@ -21,3 +21,7 @@ Music and video playing application with [ExoPlayer](https://github.com/google/E
 ## 5. [BreakOut](breakout)
 
 Application to play a [Breakout game](https://en.wikipedia.org/wiki/Breakout_(video_game))
+
+## 6. [OSU!](osu)
+
+Application to play a simplified version of [OSU! game](https://en.wikipedia.org/wiki/Osu!)
